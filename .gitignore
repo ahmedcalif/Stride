@@ -1,0 +1,92 @@
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+# Sensitive configuration files
+appsettings.json
+appsettings.*.json
+*.config
+!*template*.json
+!*example*.json
+**/Properties/launchSettings.json
+**/Properties/serviceDependencies.json
+**/Properties/serviceDependencies.*.json
+
+# User secrets
+**/secrets.json
+*.pfx
+*.key
+*.pem
+*.crt
+*.p12
+*.jks
+*.keystore
+.env
+.env.*
+*.env.local
+
+# Local databases and storage
+*.mdf
+*.ldf
+*.ndf
+*.db
+*.sqlite
+*.sqlite3
+LocalDb/
+
+# Test and coverage results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.coverage
+*.coveragexml
+*.opencover.xml
+
+# Logs
+*.log
+logs/
+Log/
+Logs/
+
+# Temporary files
+*.tmp
+*.swp
+*.bak
+*~
+.DS_Store
+Thumbs.db
+
+# Development tools specific files
+.idea/
+_ReSharper*/
+*.ReSharper
+*.DotSettings.user
+*.GhostDoc.xml
+.sonarqube/
