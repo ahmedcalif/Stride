@@ -1,0 +1,86 @@
+@model Exception
+@{
+    ViewData["Title"] = "Development Error";
+}
+
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="~/css/site.css" />
+
+<div class="container">
+    <h1 class="text-danger">Error - Development Environment</h1>
+    <h2 class="text-danger">An error occurred while processing your request.</h2>
+
+    <div class="alert alert-warning">
+        <h4>Development Environment Details</h4>
+        <p>This detailed error information is only displayed because the application is running in the Development environment.</p>
+    </div>
+
+    @if (Model != null)
+    {
+        <div class="card border-danger mb-4">
+            <div class="card-header bg-danger text-white">
+                <h5 class="m-0">Exception Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <dl class="row">
+                            <dt class="col-md-2">Type:</dt>
+                            <dd class="col-md-10">@Model.GetType().Name</dd>
+
+                            <dt class="col-md-2">Message:</dt>
+                            <dd class="col-md-10">@Model.Message</dd>
+
+                            <dt class="col-md-2">Source:</dt>
+                            <dd class="col-md-10">@Model.Source</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <h6>Stack Trace:</h6>
+                        <pre class="bg-light p-3"><code>@Model.StackTrace</code></pre>
+                    </div>
+                </div>
+
+                @if (Model.InnerException != null)
+                {
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <h6>Inner Exception:</h6>
+                            <div class="card border-warning">
+                                <div class="card-body">
+                                    <p><strong>Type:</strong> @Model.InnerException.GetType().Name</p>
+                                    <p><strong>Message:</strong> @Model.InnerException.Message</p>
+                                    <pre class="bg-light p-3"><code>@Model.InnerException.StackTrace</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            No exception details available.
+        </div>
+    }
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="m-0">Debug Information</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Request ID:</strong> <code>@Context.TraceIdentifier</code></p>
+            <p><strong>Time:</strong> @DateTime.Now</p>
+            <p><strong>Environment:</strong> Development</p>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>

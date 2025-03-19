@@ -1,0 +1,130 @@
+@model Exception
+@{
+    ViewData["Title"] = "Error - Staging Environment";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="card border-warning shadow">
+                <div class="card-header bg-warning text-dark d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i>
+                    <h2 class="mb-0">Staging Environment Error</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning d-flex align-items-center">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <div>
+                            <strong>Environment:</strong> STAGING
+                            <span class="badge bg-warning text-dark ms-2">Debugging Information Available</span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Error Details</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Status Code:</strong> @ViewData["StatusCode"]</p>
+                                    <p><strong>Timestamp:</strong> @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                                    <p><strong>Request ID:</strong> <code>@Context.TraceIdentifier</code></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Server Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Server:</strong> @Environment.MachineName</p>
+                                    <p><strong>ASP.NET Version:</strong> @Environment.Version</p>
+                                    <p><strong>OS:</strong> @Environment.OSVersion</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model != null)
+                    {
+                        <div class="card mb-4 border-danger">
+                            <div class="card-header bg-danger text-white">
+                                <h4 class="mb-0">Exception</h4>
+                            </div>
+                            <div class="card-body">
+                                <h5>@Model.GetType().Name</h5>
+                                <div class="alert alert-danger">
+                                    @Model.Message
+                                </div>
+                                
+                                @if (Model.InnerException != null)
+                                {
+                                    <div class="mt-3">
+                                        <h6>Inner Exception:</h6>
+                                        <div class="alert alert-danger">
+                                            <strong>@Model.InnerException.GetType().Name:</strong> @Model.InnerException.Message
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        @if (ViewData["StackTrace"] != null)
+                        {
+                            <div class="card mb-4">
+                                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Stack Trace</h5>
+                                    <button class="btn btn-sm btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#stackTraceCollapse">
+                                        Toggle
+                                    </button>
+                                </div>
+                                <div class="collapse show" id="stackTraceCollapse">
+                                    <div class="card-body bg-light">
+                                        <pre class="mb-0 small text-wrap"><code>@ViewData["StackTrace"]</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <a href="/" class="btn btn-primary me-2">
+                                <i class="bi bi-house-fill me-1"></i> Home
+                            </a>
+                            <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i> Back
+                            </a>
+                        </div>
+                        <div>
+                            <span class="badge bg-warning text-dark">STAGING</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Enable copy to clipboard for code elements
+        document.querySelectorAll('pre code').forEach(block => {
+            block.addEventListener('click', function() {
+                const textToCopy = this.textContent;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalTitle = this.getAttribute('title');
+                    this.setAttribute('title', 'Copied!');
+                    setTimeout(() => {
+                        this.setAttribute('title', originalTitle || '');
+                    }, 2000);
+                });
+            });
+            block.setAttribute('title', 'Click to copy');
+            block.style.cursor = 'pointer';
+        });
+    </script>
+}

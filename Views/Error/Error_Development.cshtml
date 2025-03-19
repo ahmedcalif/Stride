@@ -1,0 +1,94 @@
+@model int
+@{
+    ViewData["Title"] = "Error " + Model;
+}
+
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="~/css/site.css" />
+
+<div class="container">
+    <h1 class="text-danger">HTTP Error @Model</h1>
+    <h2 class="text-muted">Development Environment</h2>
+
+    <div class="alert alert-warning mt-4">
+        <h4>Development Mode Information</h4>
+        <p>This detailed error information is only displayed because the application is running in the Development environment.</p>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="m-0">Error Details</h5>
+        </div>
+        <div class="card-body">
+            @switch (Model)
+            {
+                case 400:
+                    <p>Bad Request - The server cannot process the request due to a client error.</p>
+                    break;
+                case 401:
+                    <p>Unauthorized - Authentication is required and has failed or has not been provided.</p>
+                    break;
+                case 403:
+                    <p>Forbidden - The server understood the request but refuses to authorize it.</p>
+                    break;
+                case 404:
+                    <p>Not Found - The requested resource could not be found.</p>
+                    break;
+                case 405:
+                    <p>Method Not Allowed - The request method is not supported for the requested resource.</p>
+                    break;
+                case 500:
+                    <p>Internal Server Error - The server encountered an unexpected condition that prevented it from fulfilling the request.</p>
+                    break;
+                case 502:
+                    <p>Bad Gateway - The server was acting as a gateway or proxy and received an invalid response from the upstream server.</p>
+                    break;
+                case 503:
+                    <p>Service Unavailable - The server is currently unable to handle the request due to temporary overloading or maintenance.</p>
+                    break;
+                case 504:
+                    <p>Gateway Timeout - The server was acting as a gateway or proxy and did not receive a timely response from the upstream server.</p>
+                    break;
+                default:
+                    <p>An error occurred with status code @Model.</p>
+                    break;
+            }
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="m-0">Request Information</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Request ID:</strong> <code>@Context.TraceIdentifier</code></p>
+            <p><strong>Path:</strong> <code>@Context.Request.Path</code></p>
+            <p><strong>Query:</strong> <code>@Context.Request.QueryString</code></p>
+            <p><strong>Method:</strong> <code>@Context.Request.Method</code></p>
+            <p><strong>Time:</strong> @DateTime.Now</p>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="m-0">Debugging Tips</h5>
+        </div>
+        <div class="card-body">
+            <ul>
+                <li>Check your HTTP request format and parameters</li>
+                <li>Verify your authorization headers if applicable</li>
+                <li>Review server logs for more detailed error information</li>
+                <li>Use browser developer tools to inspect the network request</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="/" class="btn btn-primary me-2">Return Home</a>
+        <button onclick="window.history.back();" class="btn btn-outline-secondary">Go Back</button>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>

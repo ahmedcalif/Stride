@@ -1,0 +1,54 @@
+@model Stride.ViewModels.HabitViewModel
+@{
+    ViewData["Title"] = "Create Habit";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Add New Habit</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">Habit Name</label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                <label asp-for="Frequency" class="form-label">Frequency</label>
+                <select asp-for="Frequency" class="form-select" asp-items="Model.FrequencyOptions">
+                    <option value="">Select frequency</option>
+                </select>
+                    <span asp-validation-for="Frequency" class="text-danger"></span>
+                    </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="ReminderTime" class="form-label">Reminder Time</label>
+                            <input asp-for="ReminderTime" class="form-control" type="time" />
+                            <span asp-validation-for="ReminderTime" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Add Habit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

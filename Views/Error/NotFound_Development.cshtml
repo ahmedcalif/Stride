@@ -1,0 +1,52 @@
+@{
+    ViewData["Title"] = "Page Not Found - Development";
+}
+
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="~/css/site.css" />
+
+<div class="container">
+    <h1 class="text-warning">404 - Page Not Found</h1>
+    <h2 class="text-muted">Development Environment</h2>
+
+    <div class="alert alert-info mt-4">
+        <h4>Development Mode Information</h4>
+        <p>The requested URL could not be found. This detailed information is displayed because the application is running in Development mode.</p>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="m-0">Request Details</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Request ID:</strong> <code>@Context.TraceIdentifier</code></p>
+            <p><strong>Path:</strong> <code>@Context.Request.Path</code></p>
+            <p><strong>Query:</strong> <code>@Context.Request.QueryString</code></p>
+            <p><strong>Method:</strong> <code>@Context.Request.Method</code></p>
+            <p><strong>Time:</strong> @DateTime.Now</p>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="m-0">Debugging Tips</h5>
+        </div>
+        <div class="card-body">
+            <ul>
+                <li>Check your route configuration in Program.cs</li>
+                <li>Verify controller and action method names</li>
+                <li>Ensure the URL is correctly formatted</li>
+                <li>Check for any attribute routing conflicts</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="/" class="btn btn-primary me-2">Return Home</a>
+        <button onclick="window.history.back();" class="btn btn-outline-secondary">Go Back</button>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>

@@ -1,0 +1,30 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stride", "Stride.csproj", "{225DFADC-4265-1225-263D-C627FA919983}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stride.Data", "Stride.Data\Stride.Data.csproj", "{4107D9D3-D095-472A-BE4A-94AB3CB5EFDD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{225DFADC-4265-1225-263D-C627FA919983}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{225DFADC-4265-1225-263D-C627FA919983}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{225DFADC-4265-1225-263D-C627FA919983}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{225DFADC-4265-1225-263D-C627FA919983}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4107D9D3-D095-472A-BE4A-94AB3CB5EFDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4107D9D3-D095-472A-BE4A-94AB3CB5EFDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4107D9D3-D095-472A-BE4A-94AB3CB5EFDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4107D9D3-D095-472A-BE4A-94AB3CB5EFDD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8ADA8992-27EE-4B0F-806E-9F1416E25EF9}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,12 @@
+/home/ahmedcalif/Documents/BCIT/Term4/ASP.Net/Stride/Stride.Data/bin/Debug/net8.0/Stride.Data.deps.json
+/home/ahmedcalif/Documents/BCIT/Term4/ASP.Net/Stride/Stride.Data/bin/Debug/net8.0/Stride.Data.runtimeconfig.json
+/home/ahmedcalif/Documents/BCIT/Term4/ASP.Net/Stride/Stride.Data/bin/Debug/net8.0/Stride.Data.dll
+/home/ahmedcalif/Documents/BCIT/Term4/ASP.Net/Stride/Stride.Data/bin/Debug/net8.0/Stride.Data.pdb
+/home/ahmedcalif/Documents/BCIT/Term4/ASP.Net/Stride/Stride.Data/obj/Debug/net8.0/Stride.Data.csproj.AssemblyReference.cache
+/home/ahmedcalif/Documents/BCIT/Term4/ASP.Net/Stride/Stride.Data/obj/Debug/net8.0/Stride.Data.GeneratedMSBuildEditorConfig.editorconfig
+/home/ahmedcalif/Documents/BCIT/Term4/ASP.Net/Stride/Stride.Data/obj/Debug/net8.0/Stride.Data.csproj.CoreCompileInputs.cache
+/home/ahmedcalif/Documents/BCIT/Term4/ASP.Net/Stride/Stride.Data/obj/Debug/net8.0/Stride.Data.dll
+/home/ahmedcalif/Documents/BCIT/Term4/ASP.Net/Stride/Stride.Data/obj/Debug/net8.0/refint/Stride.Data.dll
+/home/ahmedcalif/Documents/BCIT/Term4/ASP.Net/Stride/Stride.Data/obj/Debug/net8.0/Stride.Data.pdb
+/home/ahmedcalif/Documents/BCIT/Term4/ASP.Net/Stride/Stride.Data/obj/Debug/net8.0/Stride.Data.genruntimeconfig.cache
+/home/ahmedcalif/Documents/BCIT/Term4/ASP.Net/Stride/Stride.Data/obj/Debug/net8.0/ref/Stride.Data.dll
