@@ -14,8 +14,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 // Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
-Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
-// Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Staging");
+// Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
+Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Staging");
 // Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Production");
 
 var builder = WebApplication.CreateBuilder(args);
@@ -110,6 +110,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
 else
 {
     app.UseExceptionHandler("/Home/Error");
+    app.UseStatusCodePagesWithReExecute("/Error/HandleStatusCode/{0}");
     app.UseHsts();
     Console.WriteLine("Using Production error handling with HSTS");
 }

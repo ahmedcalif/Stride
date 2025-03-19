@@ -90,3 +90,4 @@ _ReSharper*/
 *.DotSettings.user
 *.GhostDoc.xml
 .sonarqube/
+.fake
