@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace Stride.Controllers;
 
-[Authorize] // This ensures only authenticated users can access
 public class DashboardController : Controller
 {
     private readonly ILogger<DashboardController> _logger;
@@ -50,7 +49,6 @@ public class DashboardController : Controller
     }
     catch (Exception ex) {
         _logger.LogError(ex, "Failed to create user in custom repository");
-        // Continue without creating the user, or handle differently
     }
 } 
             

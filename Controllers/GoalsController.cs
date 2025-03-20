@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Stride.Data.Models;
 using Stride.ViewModels;
 using Stride.Data.DatabaseModels;
+using System;
+using Microsoft.Extensions.Logging;
 
 namespace Stride.Controllers;
-
+[Authorize]
 public class GoalsController : Controller
 {
     private readonly IGoalRepository _goalRepository;
@@ -20,13 +23,7 @@ public class GoalsController : Controller
     
     public IActionResult Index()
     {
-        var username = TempData["CurrentUser"] as string;
-        if (string.IsNullOrEmpty(username))
-        {
-            return RedirectToAction("Login", "Auth");
-        }
-        
-        TempData.Keep("CurrentUser");
+        var username = User.Identity.Name;
         
         var goals = _goalRepository.GetGoalsByUsername(username);
         var viewModel = new GoalListViewModel
@@ -39,17 +36,12 @@ public class GoalsController : Controller
     [HttpGet]
     public IActionResult Create()
     {
-        var username = TempData["CurrentUser"] as string;
-        if (string.IsNullOrEmpty(username))
-        {
-            return RedirectToAction("Login", "Auth");
-        }
-        TempData.Keep("CurrentUser");
+        var username = User.Identity.Name;
         
         return View(new GoalViewModel 
         { 
             TargetDate = DateTime.Now.AddDays(30),
-            Category = "General" // Set default category
+            Category = "General" 
         });
     }
     
@@ -57,13 +49,7 @@ public class GoalsController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Create(GoalViewModel model)
     {
-        var username = TempData["CurrentUser"] as string;
-        if (string.IsNullOrEmpty(username))
-        {
-            return RedirectToAction("Login", "Auth");
-        }
-        
-        TempData.Keep("CurrentUser");
+        var username = User.Identity.Name;
         
         if (!ModelState.IsValid)
         {
@@ -101,13 +87,7 @@ public class GoalsController : Controller
     [HttpGet]
     public IActionResult Edit(int id)
     {
-        var username = TempData["CurrentUser"] as string;
-        if (string.IsNullOrEmpty(username))
-        {
-            return RedirectToAction("Login", "Auth");
-        }
-        
-        TempData.Keep("CurrentUser");
+        var username = User.Identity.Name;
         
         var goal = _goalRepository.GetGoalById(id);
         if (goal == null)
@@ -137,13 +117,7 @@ public class GoalsController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Edit(int id, GoalViewModel model)
     {
-        var username = TempData["CurrentUser"] as string;
-        if (string.IsNullOrEmpty(username))
-        {
-            return RedirectToAction("Login", "Auth");
-        }
-        
-        TempData.Keep("CurrentUser");
+        var username = User.Identity.Name;
         
         if (id != model.Id)
         {
@@ -168,7 +142,6 @@ public class GoalsController : Controller
                 return Forbid();
             }
             
-            // Always use the existing CategoryId to preserve the relationship
             var categoryName = string.IsNullOrEmpty(model.Category) ? "General" : model.Category;
             
             existingGoal.Title = model.Title;
@@ -194,12 +167,7 @@ public class GoalsController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Delete(int id)
     {
-        var username = TempData["CurrentUser"] as string;
-        if (string.IsNullOrEmpty(username))
-        {
-            return RedirectToAction("Login", "Auth");
-        }
-        TempData.Keep("CurrentUser");
+        var username = User.Identity.Name;
         
         try
         {

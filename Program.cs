@@ -9,14 +9,14 @@ using Stride.Data.Models;
 using Stride.Data.Models.SQLRepository;
 using Microsoft.AspNetCore.Identity;
 using Stride.Data;
-using Stride.Services;
+using Stride.Data.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 // Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
 // Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
-Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Staging");
-// Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Production");
+// Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Staging");
+Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Production");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,14 +56,23 @@ builder.Services.AddDbContext<Stride.Data.Data.ApplicationDBContext>(options =>
     ));
 
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => {
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
     options.SignIn.RequireConfirmedAccount = false;
-    options.SignIn.RequireConfirmedEmail = false; 
+    options.SignIn.RequireConfirmedEmail = false;
+    
+    options.User.RequireUniqueEmail = false; 
 })
 .AddEntityFrameworkStores<Stride.Data.Data.ApplicationDBContext>()
 .AddDefaultTokenProviders();
 
-builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddTransient<Stride.Data.Services.IEmailSender, EmailSender>();
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+
+    options.User.RequireUniqueEmail = true;
+    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._";
+});
 
 
 builder.Services.ConfigureApplicationCookie(options =>

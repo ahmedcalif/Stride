@@ -15,10 +15,35 @@
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
                         
                         <div class="mb-3">
-                            <label asp-for="Input.Email" class="form-label">Email</label>
-                            <input asp-for="Input.Email" class="form-control py-2" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            <label asp-for="Input.Username" class="form-label">Username</label>
+                            <input asp-for="Input.Username" class="form-control py-2" autocomplete="username" aria-required="true" placeholder="username" />
+                            <span asp-validation-for="Input.Username" class="text-danger"></span>
                         </div>
+                          
+                        
+                        <div class="mb-3">
+                            <label asp-for="Input.UserGender" class="form-label">Gender</label>
+                            <select asp-for="Input.UserGender" class="form-select py-2" aria-required="false">
+                                <option value="">Select Gender (Optional)</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span asp-validation-for="Input.UserGender" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Input.City" class="form-label">City</label>
+                            <input asp-for="Input.City" class="form-control py-2" placeholder="Your city" />
+                            <span asp-validation-for="Input.City" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Input.PostalCode" class="form-label">Postal Code</label>
+                            <input asp-for="Input.PostalCode" class="form-control py-2" placeholder="Your postal code" />
+                            <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
+                        </div>
+                        <!-- End of new fields -->
                         
                         <div class="mb-3">
                             <label asp-for="Input.Password" class="form-label">Password</label>

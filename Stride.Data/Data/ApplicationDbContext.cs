@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Stride.Data.DatabaseModels;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Stride.Data.Services;
 
 namespace Stride.Data.Data
 {
-    public class ApplicationDBContext : IdentityDbContext
+   public class ApplicationDBContext : IdentityDbContext<ApplicationUser> 
     {
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options)
             : base(options)

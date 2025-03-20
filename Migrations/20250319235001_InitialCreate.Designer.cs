@@ -12,7 +12,7 @@ using Stride.Data.Data;
 namespace Stride.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20250306044340_InitialCreate")]
+    [Migration("20250319235001_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,7 +25,139 @@ namespace Stride.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("Stride.DatabaseModels.Achievement", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Stride.Data.DatabaseModels.Achievement", b =>
                 {
                     b.Property<int>("achievement_id")
                         .ValueGeneratedOnAdd()
@@ -70,7 +202,7 @@ namespace Stride.Migrations
                     b.ToTable("Achievements");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.AchievementType", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.AchievementType", b =>
                 {
                     b.Property<int>("achievement_type_id")
                         .ValueGeneratedOnAdd()
@@ -93,7 +225,7 @@ namespace Stride.Migrations
                     b.ToTable("AchievementType");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.Category", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.Category", b =>
                 {
                     b.Property<int>("category_id")
                         .ValueGeneratedOnAdd()
@@ -114,7 +246,7 @@ namespace Stride.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.Goal", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.Goal", b =>
                 {
                     b.Property<int>("goal_id")
                         .ValueGeneratedOnAdd()
@@ -158,7 +290,7 @@ namespace Stride.Migrations
                     b.ToTable("Goals");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.GoalPriority", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.GoalPriority", b =>
                 {
                     b.Property<int>("goal_priority_id")
                         .ValueGeneratedOnAdd()
@@ -176,7 +308,7 @@ namespace Stride.Migrations
                     b.ToTable("GoalPrioritiy");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.Habit", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.Habit", b =>
                 {
                     b.Property<int>("habit_id")
                         .ValueGeneratedOnAdd()
@@ -218,7 +350,7 @@ namespace Stride.Migrations
                     b.ToTable("Habits");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.HabitFrequency", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.HabitFrequency", b =>
                 {
                     b.Property<int>("habit_frequency_id")
                         .ValueGeneratedOnAdd()
@@ -236,7 +368,7 @@ namespace Stride.Migrations
                     b.ToTable("HabitFrequency");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.Notification", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.Notification", b =>
                 {
                     b.Property<int>("notification_id")
                         .ValueGeneratedOnAdd()
@@ -269,7 +401,7 @@ namespace Stride.Migrations
                     b.ToTable("Notifications");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.NotificationType", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.NotificationType", b =>
                 {
                     b.Property<int>("notification_type_id")
                         .ValueGeneratedOnAdd()
@@ -290,7 +422,7 @@ namespace Stride.Migrations
                     b.ToTable("NotificationType");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.Theme", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.Theme", b =>
                 {
                     b.Property<int>("theme_id")
                         .ValueGeneratedOnAdd()
@@ -307,7 +439,7 @@ namespace Stride.Migrations
                     b.ToTable("Theme");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.User", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.User", b =>
                 {
                     b.Property<int>("user_id")
                         .ValueGeneratedOnAdd()
@@ -331,7 +463,7 @@ namespace Stride.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.UserAchievements", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.UserAchievements", b =>
                 {
                     b.Property<int>("user_achievement_id")
                         .ValueGeneratedOnAdd()
@@ -354,7 +486,7 @@ namespace Stride.Migrations
                     b.ToTable("UserAchievements");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.UserSetting", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.UserSetting", b =>
                 {
                     b.Property<int>("user_setting_id")
                         .ValueGeneratedOnAdd()
@@ -387,36 +519,160 @@ namespace Stride.Migrations
                     b.ToTable("UserSettings");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.Achievement", b =>
+            modelBuilder.Entity("Stride.Data.Services.ApplicationUser", b =>
                 {
-                    b.HasOne("Stride.DatabaseModels.AchievementType", "achievementType")
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("City")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int?>("UserGender")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("Stride.Data.Services.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("Stride.Data.Services.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Stride.Data.Services.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("Stride.Data.Services.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Stride.Data.DatabaseModels.Achievement", b =>
+                {
+                    b.HasOne("Stride.Data.DatabaseModels.AchievementType", "achievementType")
                         .WithMany()
                         .HasForeignKey("achievement_type_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stride.DatabaseModels.User", null)
+                    b.HasOne("Stride.Data.DatabaseModels.User", null)
                         .WithMany("Achievements")
                         .HasForeignKey("user_id");
 
                     b.Navigation("achievementType");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.Goal", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.Goal", b =>
                 {
-                    b.HasOne("Stride.DatabaseModels.Category", "Category")
+                    b.HasOne("Stride.Data.DatabaseModels.Category", "Category")
                         .WithMany("Goals")
                         .HasForeignKey("category_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stride.DatabaseModels.GoalPriority", "Priority")
+                    b.HasOne("Stride.Data.DatabaseModels.GoalPriority", "Priority")
                         .WithMany()
                         .HasForeignKey("goal_priority_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stride.DatabaseModels.User", "User")
+                    b.HasOne("Stride.Data.DatabaseModels.User", "User")
                         .WithMany()
                         .HasForeignKey("user_id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -429,15 +685,15 @@ namespace Stride.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.Habit", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.Habit", b =>
                 {
-                    b.HasOne("Stride.DatabaseModels.HabitFrequency", "HabitFrequency")
+                    b.HasOne("Stride.Data.DatabaseModels.HabitFrequency", "HabitFrequency")
                         .WithMany("Habits")
                         .HasForeignKey("habit_frequency_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stride.DatabaseModels.User", "user")
+                    b.HasOne("Stride.Data.DatabaseModels.User", "user")
                         .WithMany()
                         .HasForeignKey("user_id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -448,15 +704,15 @@ namespace Stride.Migrations
                     b.Navigation("user");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.Notification", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.Notification", b =>
                 {
-                    b.HasOne("Stride.DatabaseModels.NotificationType", "NotificationType")
+                    b.HasOne("Stride.Data.DatabaseModels.NotificationType", "NotificationType")
                         .WithMany("Notifications")
                         .HasForeignKey("notification_type_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stride.DatabaseModels.User", "User")
+                    b.HasOne("Stride.Data.DatabaseModels.User", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("user_id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -467,17 +723,17 @@ namespace Stride.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.UserSetting", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.UserSetting", b =>
                 {
-                    b.HasOne("Stride.DatabaseModels.Theme", "Theme")
+                    b.HasOne("Stride.Data.DatabaseModels.Theme", "Theme")
                         .WithMany()
                         .HasForeignKey("theme_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Stride.DatabaseModels.User", "User")
+                    b.HasOne("Stride.Data.DatabaseModels.User", "User")
                         .WithOne("UserSetting")
-                        .HasForeignKey("Stride.DatabaseModels.UserSetting", "user_id")
+                        .HasForeignKey("Stride.Data.DatabaseModels.UserSetting", "user_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -486,22 +742,22 @@ namespace Stride.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.Category", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.Category", b =>
                 {
                     b.Navigation("Goals");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.HabitFrequency", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.HabitFrequency", b =>
                 {
                     b.Navigation("Habits");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.NotificationType", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.NotificationType", b =>
                 {
                     b.Navigation("Notifications");
                 });
 
-            modelBuilder.Entity("Stride.DatabaseModels.User", b =>
+            modelBuilder.Entity("Stride.Data.DatabaseModels.User", b =>
                 {
                     b.Navigation("Achievements");
 

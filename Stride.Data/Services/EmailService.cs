@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.Identity.UI.Services;
 using System.Threading.Tasks;
 
-namespace Stride.Services
+namespace Stride.Data.Services
 {
     public class EmailSender : IEmailSender
     {

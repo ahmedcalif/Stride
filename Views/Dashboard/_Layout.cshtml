@@ -46,12 +46,23 @@
             <div class="dropdown">
                 <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
                     <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-                    <strong>@(TempData.Peek("CurrentUser") ?? "Guest")</strong> 
+                    <strong>@(User.Identity.IsAuthenticated ? User.Identity.Name : "Guest")</strong> 
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
                     <li><a class="dropdown-item" asp-action="Index" asp-controller="Settings">Settings</a></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" asp-action="Index" asp-controller="Home">Sign out</a></li>
+                    <li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                <button type="submit" class="dropdown-item">Sign out</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Login">Sign in</a>
+                        }
+                    </li>
                 </ul>
             </div>
         </div>
@@ -102,12 +113,23 @@
                     <div class="dropdown">
                         <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
                             <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-                            <strong>@(TempData.Peek("CurrentUser") ?? "Guest")</strong> 
+                            <strong>@(User.Identity.IsAuthenticated ? User.Identity.Name : "Guest")</strong> 
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
                             <li><a class="dropdown-item" asp-action="Index" asp-controller="Settings">Settings</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" asp-action="Index" asp-controller="Home">Sign out</a></li>
+                            <li>
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                        <button type="submit" class="dropdown-item">Sign out</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Login">Sign in</a>
+                                }
+                            </li>
                         </ul>
                     </div>
                 </div>
