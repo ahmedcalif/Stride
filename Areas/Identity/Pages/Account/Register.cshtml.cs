@@ -44,35 +44,34 @@ namespace Stride.Areas.Identity.Pages.Account
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-        public class InputModel
-        {
-            [Required]
-            [Display(Name = "Username")]
-            [StringLength(255)]
-            public string Username { get; set; }
+       public class InputModel
+{
+    [Required]
+    [Display(Name = "Username")]
+    [StringLength(255)]
+    public string Username { get; set; }
 
-            [Display(Name = "Gender")]
-            public Gender? UserGender { get; set; }
+    [Display(Name = "Gender")]
+    public Gender? UserGender { get; set; }
 
-            [Display(Name = "City")]
-            [StringLength(100)]
-            public string City { get; set; }
+    [Display(Name = "City")]
+    [StringLength(100)]
+    public string City { get; set; }
 
-            [Display(Name = "Postal Code")]
-            [StringLength(20)]
-            public string PostalCode { get; set; }
+    [Display(Name = "Postal Code")]
+    [StringLength(20)]
+    public string PostalCode { get; set; }
 
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-            [DataType(DataType.Password)]
-            [Display(Name = "Password")]
-            public string Password { get; set; }
+    [Required]
+    [DataType(DataType.Password)]
+    [Display(Name = "Password")]
+    public string Password { get; set; }
 
-            [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; }
-        }
+    [DataType(DataType.Password)]
+    [Display(Name = "Confirm password")]
+    [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+    public string ConfirmPassword { get; set; }
+} 
 
         public async Task OnGetAsync(string returnUrl = null)
         {

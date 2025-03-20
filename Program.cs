@@ -60,10 +60,17 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
     options.SignIn.RequireConfirmedAccount = false;
     options.SignIn.RequireConfirmedEmail = false;
     
-    options.User.RequireUniqueEmail = false; 
+    options.User.RequireUniqueEmail = false;
+    // To disable the identity password checker
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 1; 
 })
 .AddEntityFrameworkStores<Stride.Data.Data.ApplicationDBContext>()
 .AddDefaultTokenProviders();
+builder.Services.AddScoped<IPasswordValidator<ApplicationUser>, CustomPasswordValidator<ApplicationUser>>();
 
 builder.Services.AddTransient<Stride.Data.Services.IEmailSender, EmailSender>();
 
@@ -73,6 +80,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = false;
     options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._";
 });
+
 
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -151,5 +159,44 @@ catch (Exception ex)
     Console.WriteLine($"An error occurred while initializing the database: {ex.Message}");
 }
 
-// Run the app
+
+// to check if the password validator is actually working
+using (var scope = app.Services.CreateScope())
+{
+    var serviceProvider = scope.ServiceProvider;
+    
+    Console.WriteLine("Checking registered password validators...");
+    var validators = serviceProvider.GetServices<IPasswordValidator<ApplicationUser>>().ToList();
+    
+    if (validators.Count == 0)
+    {
+        Console.WriteLine("⚠️ WARNING: No password validators are registered!");
+    }
+    else
+    {
+        Console.WriteLine($"Found {validators.Count} password validator(s):");
+        foreach (var validator in validators)
+        {
+            Console.WriteLine($"✓ {validator.GetType().FullName}");
+        }
+        
+        if (validators.Any(v => v.GetType().Name.Contains("CustomPasswordValidator")))
+        {
+            Console.WriteLine("✅ SUCCESS: CustomPasswordValidator is properly registered!");
+        }
+        else
+        {
+            Console.WriteLine("❌ ERROR: CustomPasswordValidator is NOT registered properly!");
+        }
+    }
+    
+    var options = serviceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptions<IdentityOptions>>().Value;
+    Console.WriteLine("\nPassword options configuration:");
+    Console.WriteLine($"RequireDigit: {options.Password.RequireDigit}");
+    Console.WriteLine($"RequireLowercase: {options.Password.RequireLowercase}");
+    Console.WriteLine($"RequireNonAlphanumeric: {options.Password.RequireNonAlphanumeric}");
+    Console.WriteLine($"RequireUppercase: {options.Password.RequireUppercase}");
+    Console.WriteLine($"RequiredLength: {options.Password.RequiredLength}");
+}
+
 app.Run();
