@@ -70,7 +70,7 @@ builder.Services.AddTransient<Stride.Data.Services.IEmailSender, EmailSender>();
 builder.Services.Configure<IdentityOptions>(options =>
 {
 
-    options.User.RequireUniqueEmail = true;
+    options.User.RequireUniqueEmail = false;
     options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._";
 });
 
