@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,109 +10,19 @@
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    <div class="d-flex">
-        <div class="d-none d-md-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 280px; min-height: 100vh;">
-            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                <span class="fs-4">Stride</span>
-            </a>
-            <hr>
-            <ul class="nav nav-pills flex-column mb-auto">
-                <li class="nav-item">
-                    <a asp-action='Index' asp-controller="Dashboard" class="nav-link active text-white">
-                        <i class="fas fa-home me-2"></i>
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a asp-action="Index" asp-controller="Goals" class="nav-link text-white">
-                        <i class="fas fa-bullseye me-2"></i>
-                        Goals
-                    </a>
-                </li>
-                <li>
-                    <a asp-action='Index' asp-controller="Habits" class="nav-link text-white">
-                        <i class="fas fa-tags me-2"></i>
-                        Habits
-                    </a>
-                </li>
-                <li>
-                    <a asp-action="Index" asp-controller="Settings" class="nav-link text-white">
-                        <i class="fas fa-cog me-2"></i>
-                        Settings
-                    </a>
-                </li>
-            </ul>
-            <hr>
-            <div class="dropdown">
-                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
-                    <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-                  <strong>@(User.Identity.IsAuthenticated ? User.Identity.Name : "Guest")</strong> 
-                </a>
-                <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                    <li><a class="dropdown-item" asp-action="Index" asp-controller="Settings">Settings</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" asp-action="Index" asp-controller="Home">Sign out</a></li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="flex-grow-1 d-flex flex-column">
-            <nav class="navbar navbar-dark bg-dark d-md-none">
-                <div class="container-fluid">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <a class="navbar-brand" href="/">Stride</a>
-                </div>
-            </nav>
-
-            <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="mobileSidebarLabel">Stride</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body">
-                    <ul class="nav nav-pills flex-column mb-auto">
-                        <li class="nav-item">
-                            <a asp-action='Index' asp-controller="Dashboard" class="nav-link active text-white">
-                                <i class="fas fa-home me-2"></i>
-                                Dashboard
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-action="Index" asp-controller="Goals" class="nav-link text-white">
-                                <i class="fas fa-bullseye me-2"></i>
-                                Goals
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-action='Index' asp-controller="Habits" class="nav-link text-white">
-                                <i class="fas fa-tags me-2"></i>
-                                Habits
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-action="Index" asp-controller="Settings" class="nav-link text-white">
-                                <i class="fas fa-cog me-2"></i>
-                                Settings
-                            </a>
-                        </li>
-                    </ul>
-                    <hr>
-                    <div class="dropdown">
-                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
-                            <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-                            <strong>@(User.Identity.IsAuthenticated ? User.Identity.Name : "Guest")</strong>  
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                            <li><a class="dropdown-item" asp-action="Index" asp-controller="Settings">Settings</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" asp-action="Index" asp-controller="Home">Sign out</a></li>
-                        </ul>
+   <div class="container-fluid d-flex flex-column min-vh-100">
+        <div class="container mt-4">
+            <nav class="navbar navbar-expand navbar-light bg-light rounded-pill py-2 w-auto mx-auto" style="max-width: 500px;">
+                <div class="container-fluid px-2">
+                    <div class="navbar-nav d-flex flex-row justify-content-between w-100">
+                        <a class="nav-link px-3 text-dark" href="/Dashboard/">Dashboard</a>
+                        <a class="nav-link px-3 text-dark" href="/Goals/">Goals</a>
+                        <a class="nav-link px-3 text-dark" href="/Habits/">Habits</a>
+                        <a class="nav-link px-3 text-dark" href="/Settings/">Settings</a>
                     </div>
                 </div>
-            </div>
-
+            </nav>
+        </div>
             <main class="flex-grow-1 p-3">
                 @RenderBody()
             </main>

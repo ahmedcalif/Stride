@@ -21,7 +21,7 @@
         
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-light">
-                <h5 class="card-title mb-0">Profile Information</h5>
+                <h5 class="card-title mb-0 text-dark">Profile Information</h5>
             </div>
             <div class="card-body">
                 <div class="mb-3">
@@ -39,49 +39,9 @@
         
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-light">
-                <h5 class="card-title mb-0">Preferences</h5>
+                <h5 class="card-title mb-0 text-dark">Security</h5>
             </div>
             <div class="card-body">
-                <div class="mb-3">
-                    <label asp-for="Theme" class="form-label"></label>
-                    <select asp-for="Theme" class="form-select">
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                        <option value="system">System Default</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card shadow-sm mb-4">
-            <div class="card-header bg-light">
-                <h5 class="card-title mb-0">Notifications</h5>
-            </div>
-            <div class="card-body">
-                <div class="form-check form-switch mb-3">
-                    <input asp-for="EmailNotifications" class="form-check-input">
-                    <label asp-for="EmailNotifications" class="form-check-label"></label>
-                </div>
-                <div class="form-check form-switch mb-3">
-                    <input asp-for="PushNotifications" class="form-check-input">
-                    <label asp-for="PushNotifications" class="form-check-label"></label>
-                </div>
-                <div class="form-check form-switch mb-3">
-                    <input asp-for="SmsNotifications" class="form-check-input">
-                    <label asp-for="SmsNotifications" class="form-check-label"></label>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card shadow-sm mb-4">
-            <div class="card-header bg-light">
-                <h5 class="card-title mb-0">Security</h5>
-            </div>
-            <div class="card-body">
-                <div class="form-check form-switch mb-3">
-                    <input asp-for="TwoFactorEnabled" class="form-check-input">
-                    <label asp-for="TwoFactorEnabled" class="form-check-label"></label>
-                </div>
                 <div class="mb-3">
                     <a asp-controller="Account" asp-action="ChangePassword" class="btn btn-outline-secondary">Change Password</a>
                 </div>
