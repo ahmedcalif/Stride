@@ -26,8 +26,14 @@ public class DashboardController : Controller
     }
   
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> Index()
     {
+     _logger.LogInformation($"Controller: {this.GetType().Name}, IsAuthenticated: {User.Identity?.IsAuthenticated}, Name: {User.Identity?.Name ?? "null"}");
+        foreach (var claim in User.Claims)
+        {
+    _logger.LogInformation($"Claim: {claim.Type} = {claim.Value}");
+        }
         try
         {
             var username = User.Identity.Name;
@@ -73,7 +79,7 @@ public class DashboardController : Controller
     [HttpGet]
     public IActionResult Settings()
     {
-        var username = User.Identity.Name;
+        var username = User.Identity?.Name;
         return RedirectToAction("Index", "Settings", new { username });
     }
 }
