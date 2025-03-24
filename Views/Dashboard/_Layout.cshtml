@@ -10,19 +10,24 @@
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    <div class="container-fluid d-flex flex-column min-vh-100">
-        <div class="container mt-4">
-            <nav class="navbar navbar-expand navbar-light bg-light rounded-pill py-2 w-auto mx-auto" style="max-width: 500px;">
-                <div class="container-fluid px-2">
-                    <div class="navbar-nav d-flex flex-row justify-content-between w-100">
-                        <a class="nav-link px-3 text-dark" href="/Dashboard/">Dashboard</a>
-                        <a class="nav-link px-3 text-dark" href="/Goals/">Goals</a>
-                        <a class="nav-link px-3 text-dark" href="/Habits/">Habits</a>
-                        <a class="nav-link px-3 text-dark" href="/Settings/">Settings</a>
-                    </div>
-                </div>
-            </nav>
-        </div>
+  <div class="py-4 d-flex justify-content-center">
+    <nav class="bg-white px-4 py-3 rounded-4 shadow-sm">
+      <ul class="nav gap-5">
+        <li class="nav-item">
+          <a href="/Dashboard" class="nav-link text-primary fs-5">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a href="/Goals" class="nav-link text-secondary fs-5">Goals</a>
+        </li>
+        <li class="nav-item">
+          <a href="/Habits" class="nav-link text-secondary fs-5">Habits</a>
+        </li>
+        <li class="nav-item">
+          <a href="/Settings" class="nav-link text-secondary fs-5 d-flex align-items-center justify-content-center">Settings</a>
+        </li>
+      </ul>
+    </nav>
+  </div>  
         <main class="flex-grow-1 p-3">
             @RenderBody()
         </main>

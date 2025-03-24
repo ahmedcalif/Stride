@@ -1,9 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using Stride.Data.Models;
+using Stride.Data.Services;
+
 namespace Stride.ViewModels;
+
 public class SettingsViewModel
 {
-   
     [Required]
     public int Id { get; set; }
     
@@ -18,7 +20,6 @@ public class SettingsViewModel
     [MaxLength(255, ErrorMessage = "Email cannot exceed 255 characters")]
     public string Email { get; set; } = string.Empty;
     
- 
     [Display(Name = "First Name")]
     [MaxLength(255, ErrorMessage = "First name cannot exceed 255 characters")]
     public string? FirstName { get; set; }
@@ -27,10 +28,20 @@ public class SettingsViewModel
     [MaxLength(255, ErrorMessage = "Last name cannot exceed 255 characters")]
     public string? LastName { get; set; }
     
+    [Display(Name = "Gender")]
+    public Gender? UserGender { get; set; }
+    
+    [Display(Name = "City")]
+    [MaxLength(100, ErrorMessage = "City cannot exceed 100 characters")]
+    public string? City { get; set; }
+    
+    [Display(Name = "Postal Code")]
+    [MaxLength(20, ErrorMessage = "Postal code cannot exceed 20 characters")]
+    public string? PostalCode { get; set; }
+    
     [Display(Name = "Full Name")]
     public string FullName => $"{FirstName} {LastName}".Trim();
     
-  
     [Display(Name = "Current Password")]
     public string? CurrentPassword { get; set; }
     
@@ -49,18 +60,10 @@ public class SettingsViewModel
     public bool SmsNotifications { get; set; } = false;
     public bool TwoFactorEnabled { get; set; } = false;
     
-    // Add this parameterless constructor
     public SettingsViewModel()
     {
-        // Initialize with default values
-        Theme = "light";
-        EmailNotifications = false;
-        PushNotifications = false;
-        SmsNotifications = false;
-        TwoFactorEnabled = false;
     }
-    
-    public SettingsViewModel(Data.Models.User user)
+    public SettingsViewModel(User user)
     {
         Id = user.Id;
         Username = user.Username ?? string.Empty;
@@ -68,13 +71,34 @@ public class SettingsViewModel
         FirstName = user.FirstName;
         LastName = user.LastName;
         
-        Theme = "light";
-        EmailNotifications = false;
-        PushNotifications = false;
-        SmsNotifications = false;
-        TwoFactorEnabled = false;
     }
     
+    public SettingsViewModel(ApplicationUser user)
+    {
+        Id = 0;
+        try {
+            if (int.TryParse(user.Id, out int userId))
+                Id = userId;
+        } catch {}
+        
+        Username = user.UserName ?? string.Empty;
+        Email = user.Email ?? string.Empty;
+        
+        UserGender = user.UserGender;
+        City = user.City;
+        PostalCode = user.PostalCode;
+
+        try {
+            if (user.GetType().GetProperty("FirstName") != null)
+                FirstName = (string?)user.GetType().GetProperty("FirstName")?.GetValue(user);
+            
+            if (user.GetType().GetProperty("LastName") != null)
+                LastName = (string?)user.GetType().GetProperty("LastName")?.GetValue(user);
+        } catch {}
+        
+    }
+    
+
     public void UpdateUser(User user)
     {
         user.Username = Username;
@@ -82,9 +106,31 @@ public class SettingsViewModel
         user.FirstName = FirstName;
         user.LastName = LastName;
         
+    
         if (!string.IsNullOrEmpty(NewPassword))
         {
             user.Password = NewPassword;
         }
+    }
+    public void UpdateApplicationUser(ApplicationUser user)
+    {
+        user.UserName = Username;
+        user.Email = Email;
+        
+
+        user.UserGender = UserGender;
+        user.City = City;
+        user.PostalCode = PostalCode;
+        try {
+            var userType = user.GetType();
+            
+            if (userType.GetProperty("FirstName") != null)
+                userType.GetProperty("FirstName")?.SetValue(user, FirstName);
+            
+            if (userType.GetProperty("LastName") != null)
+                userType.GetProperty("LastName")?.SetValue(user, LastName);
+        } catch {}
+        
+        user.TwoFactorEnabled = TwoFactorEnabled;
     }
 }

@@ -44,34 +44,40 @@ namespace Stride.Areas.Identity.Pages.Account
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-       public class InputModel
-{
-    [Required]
-    [Display(Name = "Username")]
-    [StringLength(255)]
-    public string Username { get; set; }
+        public class InputModel
+        {
+            [Required]
+            [EmailAddress]
+            [Display(Name = "Email")]
+            public string Email { get; set; }
 
-    [Display(Name = "Gender")]
-    public Gender? UserGender { get; set; }
+            [Required]
+            [Display(Name = "Username")]
+            [StringLength(255)]
+            public string Username { get; set; }
 
-    [Display(Name = "City")]
-    [StringLength(100)]
-    public string City { get; set; }
+            [Display(Name = "Gender")]
+            public Gender? UserGender { get; set; }
 
-    [Display(Name = "Postal Code")]
-    [StringLength(20)]
-    public string PostalCode { get; set; }
+            [Display(Name = "City")]
+            [StringLength(100)]
+            public string City { get; set; }
 
-    [Required]
-    [DataType(DataType.Password)]
-    [Display(Name = "Password")]
-    public string Password { get; set; }
+            [Display(Name = "Postal Code")]
+            [StringLength(20)]
+            public string PostalCode { get; set; }
 
-    [DataType(DataType.Password)]
-    [Display(Name = "Confirm password")]
-    [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-    public string ConfirmPassword { get; set; }
-} 
+            [Required]
+            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [DataType(DataType.Password)]
+            [Display(Name = "Password")]
+            public string Password { get; set; }
+
+            [DataType(DataType.Password)]
+            [Display(Name = "Confirm password")]
+            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            public string ConfirmPassword { get; set; }
+        } 
 
         public async Task OnGetAsync(string returnUrl = null)
         {
@@ -83,6 +89,7 @@ namespace Stride.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/Dashboard/Index");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
@@ -90,26 +97,29 @@ namespace Stride.Areas.Identity.Pages.Account
                 user.UserGender = Input.UserGender;
                 user.City = Input.City;
                 user.PostalCode = Input.PostalCode;
-                user.UserName = Input.Username;
                 
                 await _userStore.SetUserNameAsync(user, Input.Username, CancellationToken.None);
+                
+                var emailStore = GetEmailStore();
+                await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-
                     
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);
                 }
+                
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 
+            // If we got this far, something failed, redisplay form
             return Page();
         }
 
@@ -125,6 +135,15 @@ namespace Stride.Areas.Identity.Pages.Account
                     $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
+        }
+
+        private IUserEmailStore<ApplicationUser> GetEmailStore()
+        {
+            if (!_userManager.SupportsUserEmail)
+            {
+                throw new NotSupportedException("The default UI requires a user store with email support.");
+            }
+            return (IUserEmailStore<ApplicationUser>)_userStore;
         }
     }
 }
