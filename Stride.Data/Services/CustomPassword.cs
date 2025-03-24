@@ -16,30 +16,29 @@ namespace Stride.Data.Services
             _logger = logger;
         }
 
-        public Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user, string password)
+       public Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user, string password)
+{
+    _logger.LogInformation("CustomPasswordValidator is validating a password");
+    
+    var errors = new List<IdentityError>();
+    if (string.IsNullOrEmpty(password))
+    {
+        _logger.LogWarning("Password is empty or null");
+        errors.Add(new IdentityError
         {
-            _logger.LogInformation("CustomPasswordValidator is validating a password");
-            
-            var errors = new List<IdentityError>();
+            Code = "PasswordEmpty",
+            Description = "Password cannot be empty"
+        });
+        return Task.FromResult(IdentityResult.Failed(errors.ToArray()));
+    } 
 
-            if (string.IsNullOrEmpty(password))
-            {
-                _logger.LogWarning("Password is empty or null");
-                errors.Add(new IdentityError
-                {
-                    Code = "PasswordEmpty",
-                    Description = "Password cannot be empty"
-                });
-                return Task.FromResult(IdentityResult.Failed(errors.ToArray()));
-            }
-
-            if (password.Length < 6)
+            if (password.Length < 4)
             {
                 _logger.LogWarning("Password is too short");
                 errors.Add(new IdentityError
                 {
                     Code = "PasswordTooShort",
-                    Description = "Password must be at least 6 characters long"
+                    Description = "Password must be at least 4 characters long"
                 });
             }
 

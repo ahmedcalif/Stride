@@ -72,7 +72,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
 })
 .AddEntityFrameworkStores<Stride.Data.Data.ApplicationDBContext>()
 .AddDefaultTokenProviders();
-builder.Services.AddScoped<IPasswordValidator<ApplicationUser>, CustomPasswordValidator<ApplicationUser>>();
 
 builder.Services.AddTransient<Stride.Data.Services.IEmailSender, EmailSender>();
 
@@ -83,6 +82,18 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._";
 });
 
+builder.Services.AddIdentityCore<ApplicationUser>(options => {
+    options.Password.RequiredLength = 1;
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+})
+.AddPasswordValidator<CustomPasswordValidator<ApplicationUser>>();
+
+builder.Services.Remove(builder.Services.FirstOrDefault(
+    d => d.ServiceType == typeof(IPasswordValidator<ApplicationUser>) &&
+         d.ImplementationType == typeof(PasswordValidator<ApplicationUser>)));
 
 
 builder.Services.ConfigureApplicationCookie(options =>
