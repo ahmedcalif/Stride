@@ -9,6 +9,8 @@ public class User {
   [Required]
   public int Id { get; set; }
 
+   public string? IdentityId { get; set; }
+
   [MaxLength(255)] 
   public string? Name { get; set; }
 
@@ -27,4 +29,5 @@ public class User {
 
   [MaxLength(255)]
   public string? LastName {get;set;}  
+   public DateTime DateJoined { get; set; } = DateTime.UtcNow;
 }

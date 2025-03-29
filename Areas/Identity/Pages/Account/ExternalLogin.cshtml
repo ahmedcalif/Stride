@@ -1,0 +1,50 @@
+@page
+@model Stride.Areas.Identity.Pages.Account.ExternalLoginModel
+@{
+    ViewData["Title"] = "Register";
+}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow rounded-3">
+                <div class="card-body p-4 p-sm-5">
+                    <h2 class="text-center mb-4 fw-bold">Associate your @Model.ProviderDisplayName account</h2>
+                    <p class="text-center mb-4">
+                        You've successfully authenticated with <strong>@Model.ProviderDisplayName</strong>.
+                        Please enter an email address for this site below and click the Register button to finish
+                        logging in.
+                    </p>
+                    
+                    <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Input.Email" class="form-label">Email</label>
+                            <input asp-for="Input.Email" class="form-control py-2" autocomplete="email" aria-required="true" placeholder="name@example.com" />
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Input.FirstName" class="form-label">First Name</label>
+                            <input asp-for="Input.FirstName" class="form-control py-2" aria-required="true" />
+                            <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Input.LastName" class="form-label">Last Name</label>
+                            <input asp-for="Input.LastName" class="form-control py-2" aria-required="true" />
+                            <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-3 py-2">Register</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

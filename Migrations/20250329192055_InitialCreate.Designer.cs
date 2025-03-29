@@ -5,14 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Stride.Data;
 using Stride.Data.Data;
 
 #nullable disable
 
 namespace Stride.Migrations
 {
-    [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20250319235001_InitialCreate")]
+    [DbContext(typeof(ApplicationDbContext))]
+    [Migration("20250329192055_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -447,6 +448,10 @@ namespace Stride.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("user_id"));
 
+                    b.Property<string>("IdentityId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("email")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -534,12 +539,23 @@ namespace Stride.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
 
+                    b.Property<DateTime>("DateJoined")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("tinyint(1)");

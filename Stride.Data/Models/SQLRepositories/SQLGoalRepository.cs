@@ -9,9 +9,9 @@ namespace Stride.Data.Models.SQLRepository
 {
     public class SQLGoalRepository : IGoalRepository 
     {
-        private readonly ApplicationDBContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         
-        public SQLGoalRepository(ApplicationDBContext dbContext) 
+        public SQLGoalRepository(ApplicationDbContext dbContext) 
         {
             _dbContext = dbContext;
         }

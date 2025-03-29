@@ -10,9 +10,9 @@ namespace Stride.Data.Models.SQLRepository
 {
     public class SQLHabitRepository : IHabitRepository 
     {
-        private readonly ApplicationDBContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         
-        public SQLHabitRepository(ApplicationDBContext dbContext) 
+        public SQLHabitRepository(ApplicationDbContext dbContext) 
         {
             _dbContext = dbContext;
         }

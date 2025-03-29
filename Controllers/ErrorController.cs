@@ -34,36 +34,42 @@ namespace Stride.Controllers
             return View();
         }
         
-        [Route("Error/HandleStatusCode/{code:int}")]
-        public IActionResult HandleStatusCode(int code)
+     [Route("Error/HandleStatusCode/{code:int}")]
+public IActionResult HandleStatusCode(int code)
+{
+    // Set the status code in the response
+    Response.StatusCode = code;
+    
+    ViewData["StatusCode"] = code;
+    
+    if (_hostingEnvironment.IsDevelopment() || _hostingEnvironment.EnvironmentName == "Testing")
+    {
+        if (code == 404)
         {
-            if (_hostingEnvironment.IsDevelopment() || _hostingEnvironment.EnvironmentName == "Testing")
-            {
-                throw new Exception($"Status code {code} - Forcing developer exception page");
-            }
-            
-            ViewData["StatusCode"] = code;
-            
-            if (_hostingEnvironment.IsStaging())
-            {
-                if (code == 404)
-                {
-                    return View("NotFound_Staging");
-                }
-                return View("Error_Staging", code);
-            }
-            else
-            {
-                if (code == 404)
-                {
-                    return View("NotFound_Production");
-                }
-                return View("Production");
-            }
+            return View("NotFound_Development");
         }
+        return View("Error_Development", code);
+    }
+    else if (_hostingEnvironment.IsStaging())
+    {
+        if (code == 404)
+        {
+            return View("NotFound_Staging");
+        }
+        return View("Error_Staging", code);
+    }
+    else
+    {
+        if (code == 404)
+        {
+            return View("NotFound_Production");
+        }
+        return View("Production");
+    }
+} 
         
         [Route("Error/StatusCode")]
-        public IActionResult StatusCode(int code)
+      public new IActionResult StatusCode(int code) 
         {
             // Set the actual HTTP status code in the response
             Response.StatusCode = code;

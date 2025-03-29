@@ -3,16 +3,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Stride.Data.Models;
-using Stride.Data.Data;
 using Stride.Data.DatabaseModels;
+using Stride.Data;
+using Stride.Data.Data;
 
 namespace Stride.Data.Models.SQLRepository
 {
     public class SQLUserRepository : IUserRepository
     {
-        private readonly ApplicationDBContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public SQLUserRepository(ApplicationDBContext context)
+        public SQLUserRepository(ApplicationDbContext context)
         {
             _context = context;
         }

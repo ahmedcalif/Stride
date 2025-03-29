@@ -13,7 +13,7 @@ namespace Stride.Data
         {
             using (var scope = serviceProvider.CreateScope())
             {
-                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 
                 dbContext.Database.EnsureCreated();
                 
@@ -23,7 +23,7 @@ namespace Stride.Data
             }
         }
         
-        private static void SeedHabitFrequencies(ApplicationDBContext dbContext)
+        private static void SeedHabitFrequencies(ApplicationDbContext dbContext)
         {
             if (!dbContext.HabitFrequency.Any())
             {
@@ -41,7 +41,7 @@ namespace Stride.Data
             }
         }
         
-        private static void EnsureDefaultUser(ApplicationDBContext dbContext)
+        private static void EnsureDefaultUser(ApplicationDbContext dbContext)
         {
             if (!dbContext.Users.Any())
             {

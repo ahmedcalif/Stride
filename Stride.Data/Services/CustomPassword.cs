@@ -16,7 +16,7 @@ namespace Stride.Data.Services
             _logger = logger;
         }
 
-       public Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user, string password)
+public Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user, string? password) 
 {
     _logger.LogInformation("CustomPasswordValidator is validating a password");
     

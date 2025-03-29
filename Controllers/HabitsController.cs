@@ -14,9 +14,9 @@ public class HabitsController : Controller
     private readonly IHabitRepository _habitRepository;
     private readonly ILogger<HabitsController> _logger;
 
-    private readonly ApplicationDBContext _dbContext;
+    private readonly ApplicationDbContext _dbContext;
 
-    public HabitsController(IHabitRepository habitRepository, ILogger<HabitsController> logger, ApplicationDBContext dBContext)
+    public HabitsController(IHabitRepository habitRepository, ILogger<HabitsController> logger, ApplicationDbContext dBContext)
     {
         _habitRepository = habitRepository;
         _logger = logger;

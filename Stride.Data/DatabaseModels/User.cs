@@ -21,8 +21,9 @@ namespace Stride.Data.DatabaseModels
         public UserSetting? UserSetting { get; set; }
         public ICollection<Notification> Notifications { get; set; }
         public ICollection<Achievement> Achievements { get; set; }
+    public string IdentityId { get; internal set; }
 
-        public static implicit operator User(string v)
+    public static implicit operator User(string v)
         {
             throw new NotImplementedException();
         }

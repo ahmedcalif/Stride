@@ -1,12 +1,7 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -22,17 +17,14 @@ namespace Stride.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IUserStore<ApplicationUser> _userStore;
         private readonly ILogger<RegisterModel> _logger;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
-            IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger)
         {
             _userManager = userManager;
-            _userStore = userStore;
             _signInManager = signInManager;
             _logger = logger;
         }
@@ -52,32 +44,37 @@ namespace Stride.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
-            [Display(Name = "Username")]
-            [StringLength(255)]
-            public string Username { get; set; }
-
-            [Display(Name = "Gender")]
-            public Gender? UserGender { get; set; }
-
-            [Display(Name = "City")]
-            [StringLength(100)]
-            public string City { get; set; }
-
-            [Display(Name = "Postal Code")]
-            [StringLength(20)]
-            public string PostalCode { get; set; }
-
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 1)]
+            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-         [Display(Name = "Password")]
-public string Password { get; set; }
+            [Display(Name = "Password")]
+            public string Password { get; set; }
 
             [DataType(DataType.Password)]
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
-        } 
+            
+            [Required]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+            
+            [Required]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
+            
+            [Required]
+            [Display(Name = "Username")]
+            public string Username { get; set; }
+            
+            [Display(Name = "Gender")]
+            public Gender? UserGender { get; set; }
+            
+            [Display(Name = "City")]
+            public string City { get; set; }
+            
+            [Display(Name = "Postal Code")]
+            public string PostalCode { get; set; }
+        }
 
         public async Task OnGetAsync(string returnUrl = null)
         {
@@ -92,23 +89,24 @@ public string Password { get; set; }
             
             if (ModelState.IsValid)
             {
-                var user = CreateUser();
-
-                user.UserGender = Input.UserGender;
-                user.City = Input.City;
-                user.PostalCode = Input.PostalCode;
-                
-                await _userStore.SetUserNameAsync(user, Input.Username, CancellationToken.None);
-                
-                var emailStore = GetEmailStore();
-                await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                var user = new ApplicationUser
+                {
+                    UserName = Input.Username,
+                    Email = Input.Email,
+                    FirstName = Input.FirstName,
+                    LastName = Input.LastName,
+                    UserGender = Input.UserGender,
+                    City = Input.City,
+                    PostalCode = Input.PostalCode,
+                    EmailConfirmed = true 
+                };
                 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    
+
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);
                 }
@@ -119,31 +117,7 @@ public string Password { get; set; }
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
-        }
-
-        private ApplicationUser CreateUser()
-        {
-            try
-            {
-                return Activator.CreateInstance<ApplicationUser>();
-            }
-            catch
-            {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
-                    $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
-                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
-            }
-        }
-
-        private IUserEmailStore<ApplicationUser> GetEmailStore()
-        {
-            if (!_userManager.SupportsUserEmail)
-            {
-                throw new NotSupportedException("The default UI requires a user store with email support.");
-            }
-            return (IUserEmailStore<ApplicationUser>)_userStore;
         }
     }
 }
