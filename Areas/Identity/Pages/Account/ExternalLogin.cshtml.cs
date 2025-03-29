@@ -88,7 +88,7 @@ namespace Stride.Areas.Identity.Pages.Account
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor : true);
             if (result.Succeeded)
             {
-                Console.WriteLine("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
+                Console.WriteLine($"{info.Principal.Identity.Name} logged in with {info.LoginProvider} provider.");
                 return LocalRedirect(returnUrl);
             }
             if (result.IsLockedOut)
