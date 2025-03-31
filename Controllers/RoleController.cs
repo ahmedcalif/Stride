@@ -8,21 +8,22 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Stride.ViewModels;
 using Stride.Data.Models;
+using Stride.Data.Services;
 
 namespace Stride.Controllers
 {
     [Authorize]
     public class RoleController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager; 
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUserRepository _userRepository;
         private readonly ILogger<RoleController> _logger;
 
         public RoleController(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
             RoleManager<IdentityRole> roleManager,
             IUserRepository userRepository,
             ILogger<RoleController> logger)

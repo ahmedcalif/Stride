@@ -70,52 +70,91 @@ namespace Stride.Areas.Identity.Pages.Account
             return new ChallengeResult(provider, properties);
         }
 
-        public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
-        {
-            returnUrl = Url.Content("~/Dashboard/Index");
-            if (remoteError != null)
-            {
-                ErrorMessage = $"Error from external provider: {remoteError}";
-                return RedirectToPage("./Login", new {ReturnUrl = returnUrl });
-            }
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
-            {
-                ErrorMessage = "Error loading external login information.";
-                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
-            }
+       public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
+{
+    returnUrl = Url.Content("~/Role/ChooseRole");  // Change this to redirect to role selection
+    if (remoteError != null)
+    {
+        ErrorMessage = $"Error from external provider: {remoteError}";
+        return RedirectToPage("./Login", new {ReturnUrl = returnUrl });
+    }
+    var info = await _signInManager.GetExternalLoginInfoAsync();
+    if (info == null)
+    {
+        ErrorMessage = "Error loading external login information.";
+        return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+    }
 
-            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor : true);
-            if (result.Succeeded)
+    var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor : true);
+    if (result.Succeeded)
+    {
+        Console.WriteLine($"{info.Principal.Identity.Name} logged in with {info.LoginProvider} provider.");
+        
+        // Get the current user to check/assign roles
+        var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+        if (user != null)
+        {
+            var userRoles = await _userManager.GetRolesAsync(user);
+            
+            // If user doesn't have at least 2 roles, add User and Admin roles
+            if (userRoles.Count < 2)
             {
-                Console.WriteLine($"{info.Principal.Identity.Name} logged in with {info.LoginProvider} provider.");
-                return LocalRedirect(returnUrl);
-            }
-            if (result.IsLockedOut)
-            {
-                return RedirectToPage("./Lockout");
-            }
-            else
-            {
-                // If the user does not have an account, then ask the user to create an account.
-                ReturnUrl = returnUrl;
-                ProviderDisplayName = info.ProviderDisplayName;
-                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
+                // Make sure the user has both User and Admin roles
+                if (!await _userManager.IsInRoleAsync(user, "User"))
                 {
-                    Input = new InputModel
-                    {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email),
-                        FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
-                        LastName = info.Principal.FindFirstValue(ClaimTypes.Surname)
-                    };
+                    await EnsureRoleExists("User");
+                    await _userManager.AddToRoleAsync(user, "User");
                 }
-                return Page();
+                
+                if (!await _userManager.IsInRoleAsync(user, "Admin"))
+                {
+                    await EnsureRoleExists("Admin");
+                    await _userManager.AddToRoleAsync(user, "Admin");
+                }
+                
+                // Sign out and sign back in to refresh claims
+                await _signInManager.SignOutAsync();
+                await _signInManager.SignInAsync(user, isPersistent: false);
             }
         }
+        
+        return LocalRedirect(returnUrl);
+    }
+    if (result.IsLockedOut)
+    {
+        return RedirectToPage("./Lockout");
+    }
+    else
+    {
+        // If the user does not have an account, then ask the user to create an account.
+        ReturnUrl = returnUrl;
+        ProviderDisplayName = info.ProviderDisplayName;
+        if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
+        {
+            Input = new InputModel
+            {
+                Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
+                LastName = info.Principal.FindFirstValue(ClaimTypes.Surname)
+            };
+        }
+        return Page();
+    }
+}
 
-       public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
+// Add this helper method to the ExternalLoginModel class
+private async Task EnsureRoleExists(string roleName)
 {
-    returnUrl = returnUrl ?? Url.Content("~/Dashboard/Index");
+    var roleManager = HttpContext.RequestServices.GetRequiredService<RoleManager<IdentityRole>>();
+    if (!await roleManager.RoleExistsAsync(roleName))
+    {
+        await roleManager.CreateAsync(new IdentityRole(roleName));
+    }
+}
+
+public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
+{
+    returnUrl = Url.Content("~/Role/ChooseRole");  // Change to redirect to role selection
     var info = await _signInManager.GetExternalLoginInfoAsync();
     if (info == null)
     {
@@ -140,6 +179,13 @@ namespace Stride.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+                
+                // Ensure roles exist and add user to both roles
+                await EnsureRoleExists("User");
+                await EnsureRoleExists("Admin");
+                
+                await _userManager.AddToRoleAsync(user, "User");
+                await _userManager.AddToRoleAsync(user, "Admin");
                 
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 
