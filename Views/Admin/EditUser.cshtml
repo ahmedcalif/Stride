@@ -1,0 +1,86 @@
+@model EditUserViewModel
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<div class="container my-4">
+    <div class="bg-dark text-light p-4 rounded-3 shadow">
+        <h1 class="display-5 mb-4">Edit User</h1>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card bg-dark text-light border border-secondary">
+                    <div class="card-body">
+                        <form asp-action="EditUser" method="post">
+                            <input type="hidden" asp-for="Id" />
+                            
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            
+                            <div class="mb-4">
+                                <label asp-for="UserName" class="form-label text-light">Username</label>
+                                <input asp-for="UserName" class="form-control bg-dark text-light border-secondary" />
+                                <span asp-validation-for="UserName" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label asp-for="Email" class="form-label text-light">Email</label>
+                                <input asp-for="Email" class="form-control bg-dark text-light border-secondary" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label asp-for="FirstName" class="form-label text-light">First Name</label>
+                                    <input asp-for="FirstName" class="form-control bg-dark text-light border-secondary" />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="LastName" class="form-label text-light">Last Name</label>
+                                    <input asp-for="LastName" class="form-control bg-dark text-light border-secondary" />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h4 class="text-light border-bottom pb-2 mb-3">User Roles</h4>
+                                <div class="card bg-dark text-light border border-secondary">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            @for (int i = 0; i < Model.Roles.Count; i++)
+                                            {
+                                                <div class="col-md-4 mb-2">
+                                                    <div class="form-check">
+                                                        <input type="hidden" asp-for="@Model.Roles[i].RoleName" />
+                                                        <input class="form-check-input" type="checkbox" 
+                                                               asp-for="@Model.Roles[i].IsSelected" 
+                                                               id="role-@Model.Roles[i].RoleName" />
+                                                        <label class="form-check-label" for="role-@Model.Roles[i].RoleName">
+                                                            @Model.Roles[i].RoleName
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-4">
+                                <a asp-action="Users" class="btn btn-outline-light btn-lg px-4">
+                                    <i class="bi bi-arrow-left me-2"></i>Back
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-lg px-4">
+                                    <i class="bi bi-save me-2"></i>Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

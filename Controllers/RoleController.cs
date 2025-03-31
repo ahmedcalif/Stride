@@ -64,24 +64,47 @@ namespace Stride.Controllers
                 _logger.LogInformation($"Assigned 'User' role to {identityUser.UserName}");
             }
             
-            if (userRoles.Count == 1)
-            {
-                await SetActiveRole(userRoles.First());
-                return RedirectToAction("Index", "Dashboard");
-            }
+            // Remove this condition to always show the role selection page
+            // if (userRoles.Count == 1)
+            // {
+            //     await SetActiveRole(userRoles.First());
+            //     return RedirectToAction("Index", "Dashboard");
+            // }
             
             await EnsureUserInCustomDbAsync(identityUser);
             
+            // Ensure basic roles exist
+            await EnsureBasicRolesExist();
+            
+            // Get all roles instead of just the user's roles
+            var allRoles = await _roleManager.Roles.ToListAsync();
+            
             var model = new ChooseRoleViewModel
             {
-                AvailableRoles = userRoles.Select(r => new RoleOption
-                {
-                    RoleName = r,
-                    DisplayName = GetDisplayName(r)
-                }).ToList()
+                AvailableRoles = allRoles
+                    .Where(r => userRoles.Contains(r.Name)) // Only show roles the user has
+                    .Select(r => new RoleOption
+                    {
+                        RoleName = r.Name,
+                        DisplayName = GetDisplayName(r.Name)
+                    }).ToList()
             };
 
             return View(model);
+        }
+
+        private async Task EnsureBasicRolesExist()
+        {
+            string[] basicRoles = { "User", "Admin" };
+            
+            foreach (var role in basicRoles)
+            {
+                if (!await _roleManager.RoleExistsAsync(role))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole(role));
+                    _logger.LogInformation($"Created role: {role}");
+                }
+            }
         }
 
         [HttpPost]
@@ -151,7 +174,7 @@ namespace Stride.Controllers
             };
         }
         
-        private async Task EnsureUserInCustomDbAsync(IdentityUser identityUser)
+        private async Task EnsureUserInCustomDbAsync(ApplicationUser identityUser)
         {
             try
             {

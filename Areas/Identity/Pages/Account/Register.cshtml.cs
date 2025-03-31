@@ -85,7 +85,7 @@ namespace Stride.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
-     public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+    public async Task<IActionResult> OnPostAsync(string returnUrl = null)
 {
     try
     {
@@ -156,7 +156,7 @@ namespace Stride.Areas.Identity.Pages.Account
                 await _roleManager.CreateAsync(new IdentityRole("Admin"));
             }
             
-            // Add user to both roles
+            // Add both roles to the user for testing
             _logger.LogInformation($"Adding {user.UserName} to User role");
             await _userManager.AddToRoleAsync(user, "User");
             
@@ -166,6 +166,7 @@ namespace Stride.Areas.Identity.Pages.Account
             _logger.LogInformation($"Signing in user {user.UserName}");
             await _signInManager.SignInAsync(user, isPersistent: false);
             
+            // Make sure we're redirecting to the choose role page
             return LocalRedirect(returnUrl);
         }
         
