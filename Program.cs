@@ -11,6 +11,8 @@ using Stride.Data.Data;
 using Stride.Data.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 // Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
 // Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
@@ -106,6 +108,14 @@ builder.Services.ConfigureApplicationCookie(options =>
             return Task.CompletedTask;
         }
     };
+});
+
+
+builder.Services.AddMvc(config => {
+    var policy = new AuthorizationPolicyBuilder()
+    .RequireAuthenticatedUser()
+    .Build();
+    config.Filters.Add(new AuthorizeFilter(policy));
 });
 
 var app = builder.Build();

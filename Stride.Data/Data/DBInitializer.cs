@@ -4,10 +4,13 @@ using System;
 using System.Linq;
 using Stride.Data.Data;
 using Stride.Data.DatabaseModels;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Stride.Data
 {
-    public static class DbInitializer
+    public class DbInitializer
     {
         public static void Initialize(IServiceProvider serviceProvider)
         {
@@ -18,8 +21,6 @@ namespace Stride.Data
                 dbContext.Database.EnsureCreated();
                 
                 SeedHabitFrequencies(dbContext);
-                
-                EnsureDefaultUser(dbContext);
             }
         }
         
@@ -41,20 +42,32 @@ namespace Stride.Data
             }
         }
         
-        private static void EnsureDefaultUser(ApplicationDbContext dbContext)
+      
+        public static async Task SeedRoles(IServiceProvider serviceProvider)
         {
-            if (!dbContext.Users.Any())
+            using (var scope = serviceProvider.CreateScope())
             {
-                Console.WriteLine("Creating default user...");
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<DbInitializer>>();
                 
-                dbContext.Users.Add(new User
+                string[] roleNames = { "Admin", "User" };
+                
+                foreach (var roleName in roleNames)
                 {
-                    username = "defaultuser",
-                    email = "default@example.com",
-                });
-                
-                dbContext.SaveChanges();
-                Console.WriteLine("Default user created successfully.");
+                    try
+                    {
+                        var roleExists = await roleManager.RoleExistsAsync(roleName);
+                        if (!roleExists)
+                        {
+                            await roleManager.CreateAsync(new IdentityRole(roleName));
+                            logger.LogInformation($"Created role: {roleName}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, $"Error creating role {roleName}");
+                    }
+                }
             }
         }
     }

@@ -1,0 +1,60 @@
+@model Stride.ViewModels.ChooseRoleViewModel
+@{
+    ViewData["Title"] = "Choose Your Role";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow rounded-3">
+                <div class="card-body p-4 p-sm-5">
+                    <h2 class="text-center mb-4 fw-bold">Choose Your Role</h2>
+                    
+                    <p class="text-muted text-center mb-4">
+                        You have multiple roles in the system. Please select which role you'd like to use for this session.
+                    </p>
+                    
+                    <form asp-action="ChooseRole" asp-controller="Role" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                        @foreach (var role in Model.AvailableRoles)
+                        {
+                            <div class="p-3 mb-3 border rounded @(Model.SelectedRole == role.RoleName ? "border-primary" : "")">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="SelectedRole" id="role-@role.RoleName" 
+                                           value="@role.RoleName" @(Model.SelectedRole == role.RoleName ? "checked" : "")>
+                                    <label class="form-check-label d-block" for="role-@role.RoleName">
+                                        <span class="d-block fw-bold fs-5">@role.DisplayName</span>
+                                        <span class="text-muted">@GetRoleDescription(role.RoleName)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-3 py-2">Continue</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+@functions {
+    public string GetRoleDescription(string roleName)
+    {
+        return roleName switch
+        {
+            "Admin" => "Full access to all system features and settings",
+            "Manager" => "Department-level oversight and approvals",
+            "Editor" => "Create and manage content across the platform",
+            "User" => "Standard access to basic features",
+            _ => "Access based on your assigned permissions"
+        };
+    }
+}

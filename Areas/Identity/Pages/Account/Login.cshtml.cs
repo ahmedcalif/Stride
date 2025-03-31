@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Stride.Data.Services;
+using System.Security.Claims;
 
 namespace Stride.Areas.Identity.Pages.Account
 {
@@ -48,53 +49,79 @@ namespace Stride.Areas.Identity.Pages.Account
             public bool RememberMe { get; set; }
         }
 
-        public async Task OnGetAsync(string returnUrl = null)
+       public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+{
+    returnUrl ??= Url.Content("~/Dashboard/Index");
+    ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+    
+    if (ModelState.IsValid)
+    {
+        var result = await _signInManager.PasswordSignInAsync(Input.Username, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+        if (result.Succeeded)
         {
-            if (!string.IsNullOrEmpty(ErrorMessage))
+            _logger.LogInformation("User logged in.");
+            
+            var user = await _signInManager.UserManager.FindByNameAsync(Input.Username);
+            var userRoles = await _signInManager.UserManager.GetRolesAsync(user);
+            
+            if (userRoles.Count > 1)
             {
-                ModelState.AddModelError(string.Empty, ErrorMessage);
+                return RedirectToAction("ChooseRole", "Role");
             }
-
-            returnUrl ??= Url.Content("~/");
-
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
-            ReturnUrl = returnUrl;
+            else if (userRoles.Count == 1)
+            {
+                await _signInManager.SignOutAsync();
+                
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Role, userRoles[0]),
+                    new Claim("ActiveRole", userRoles[0])
+                };
+                
+                await _signInManager.SignInWithClaimsAsync(user, Input.RememberMe, claims);
+                _logger.LogInformation($"Set active role '{userRoles[0]}' for user {user.UserName}");
+            }
+            else
+            {
+                var roleManager = HttpContext.RequestServices.GetService<RoleManager<IdentityRole>>();
+                
+                bool roleExists = await roleManager.RoleExistsAsync("User");
+                if (!roleExists)
+                {
+                    await roleManager.CreateAsync(new IdentityRole("User"));
+                }
+                
+                await _signInManager.UserManager.AddToRoleAsync(user, "User");
+                await _signInManager.SignOutAsync();
+                
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Role, "User"),
+                    new Claim("ActiveRole", "User")
+                };
+                
+                await _signInManager.SignInWithClaimsAsync(user, Input.RememberMe, claims);
+                _logger.LogInformation($"Assigned and set active role 'User' for user {user.UserName}");
+            }
+            
+            return LocalRedirect(returnUrl);
         }
-
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        if (result.RequiresTwoFactor)
         {
-            returnUrl ??= Url.Content("~/Dashboard/Index");
-
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
-            if (ModelState.IsValid)
-            {
-                var result = await _signInManager.PasswordSignInAsync(Input.Username, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
-                }
-                if (result.RequiresTwoFactor)
-                {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
-                }
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("User account locked out.");
-                    return RedirectToPage("./Lockout");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return Page();
-                }
-            }
-
+            return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+        }
+        if (result.IsLockedOut)
+        {
+            _logger.LogWarning("User account locked out.");
+            return RedirectToPage("./Lockout");
+        }
+        else
+        {
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             return Page();
         }
+    }
+    return Page();
+} 
     }
 }
