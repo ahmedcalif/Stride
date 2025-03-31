@@ -17,15 +17,18 @@ namespace Stride.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<RegisterModel> _logger;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
+            RoleManager<IdentityRole> roleManager,
             ILogger<RegisterModel> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
             _logger = logger;
         }
 
@@ -84,11 +87,40 @@ namespace Stride.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/Dashboard/Index");
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            
-            if (ModelState.IsValid)
+            try
             {
+                returnUrl ??= Url.Content("~/Dashboard/Index");
+                
+                ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+                
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogWarning("Model state is invalid during registration");
+                    foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        _logger.LogWarning($"Model error: {error.ErrorMessage}");
+                    }
+                    return Page();
+                }
+                
+                _logger.LogInformation($"Starting registration for {Input.Username} / {Input.Email}");
+                
+                var existingUsername = await _userManager.FindByNameAsync(Input.Username);
+                if (existingUsername != null)
+                {
+                    _logger.LogWarning($"Username {Input.Username} already exists");
+                    ModelState.AddModelError(string.Empty, "Username already exists.");
+                    return Page();
+                }
+                
+                var existingEmail = await _userManager.FindByEmailAsync(Input.Email);
+                if (existingEmail != null)
+                {
+                    _logger.LogWarning($"Email {Input.Email} already exists");
+                    ModelState.AddModelError(string.Empty, "Email already exists.");
+                    return Page();
+                }
+                
                 var user = new ApplicationUser
                 {
                     UserName = Input.Username,
@@ -98,26 +130,47 @@ namespace Stride.Areas.Identity.Pages.Account
                     UserGender = Input.UserGender,
                     City = Input.City,
                     PostalCode = Input.PostalCode,
-                    EmailConfirmed = true 
+                    EmailConfirmed = true
                 };
                 
+                _logger.LogInformation($"Creating user {user.UserName}");
                 var result = await _userManager.CreateAsync(user, Input.Password);
-
+                
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
-
+                    _logger.LogInformation($"User {user.UserName} created successfully");
+                    
+                    bool userRoleExists = await _roleManager.RoleExistsAsync("User");
+                    if (!userRoleExists)
+                    {
+                        _logger.LogInformation("Creating User role");
+                        await _roleManager.CreateAsync(new IdentityRole("User"));
+                    }
+                    
+                    _logger.LogInformation($"Adding {user.UserName} to User role");
+                    await _userManager.AddToRoleAsync(user, "User");
+                    
+                    _logger.LogInformation($"Signing in user {user.UserName}");
                     await _signInManager.SignInAsync(user, isPersistent: false);
+                    
                     return LocalRedirect(returnUrl);
                 }
                 
                 foreach (var error in result.Errors)
                 {
+                    _logger.LogError($"User creation error: {error.Code} - {error.Description}");
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
+                
+                return Page();
             }
-
-            return Page();
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception during registration: {ex.Message}");
+                _logger.LogError($"Stack trace: {ex.StackTrace}");
+                ModelState.AddModelError(string.Empty, "An unexpected error occurred during registration. Please try again.");
+                return Page();
+            }
         }
     }
 }
