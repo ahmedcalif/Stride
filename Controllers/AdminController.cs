@@ -35,7 +35,6 @@ public class AdminController : Controller
     {
         if (ModelState.IsValid)
         {
-            // Check if the role already exists
             bool roleExists = await _roleManager.RoleExistsAsync(model.RoleName);
             
             if (!roleExists)
@@ -88,7 +87,6 @@ public class AdminController : Controller
             RoleName = role.Name
         };
 
-        // Retrieve all users in this role
         foreach (var user in _userManager.Users.ToList())
         {
             if (await _userManager.IsInRoleAsync(user, role.Name))
@@ -307,7 +305,6 @@ public async Task<IActionResult> EditUser(EditUserViewModel model)
         return View("NotFound");
     }
     
-    // Update basic user properties
     user.UserName = model.UserName;
     user.Email = model.Email;
     
@@ -328,15 +325,12 @@ public async Task<IActionResult> EditUser(EditUserViewModel model)
         return View(model);
     }
     
-    // Handle role updates
     var userRoles = await _userManager.GetRolesAsync(user);
     
-    // Selected roles that are not currently assigned
     var rolesToAdd = model.Roles
         .Where(r => r.IsSelected && !userRoles.Contains(r.RoleName))
         .Select(r => r.RoleName);
     
-    // Current roles that are no longer selected
     var rolesToRemove = model.Roles
         .Where(r => !r.IsSelected && userRoles.Contains(r.RoleName))
         .Select(r => r.RoleName);
@@ -358,7 +352,6 @@ public async Task<IActionResult> DeleteUser(string id)
         return View("NotFound");
     }
     
-    // Don't allow deleting the last admin user
     var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
     var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
     

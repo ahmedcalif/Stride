@@ -73,7 +73,7 @@ namespace Stride.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
         {
-            returnUrl = Url.Content("~/Dashboard/Index");  // Go straight to Dashboard for Google login
+            returnUrl = Url.Content("~/Role/ChooseRole");
             
             if (remoteError != null)
             {
@@ -95,33 +95,6 @@ namespace Stride.Areas.Identity.Pages.Account
                 
                 var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
                 if (user != null)
-                {
-                    var userRoles = await _userManager.GetRolesAsync(user);
-                    
-                    if (userRoles.Count == 0)
-                    {
-                        await EnsureRoleExists("User");
-                        await _userManager.AddToRoleAsync(user, "User");
-                        
-                        await _signInManager.SignOutAsync();
-                        var claims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.Role, "User"),
-                            new Claim("ActiveRole", "User")
-                        };
-                        await _signInManager.SignInWithClaimsAsync(user, isPersistent: false, claims);
-                    }
-                    else
-                    {
-                        await _signInManager.SignOutAsync();
-                        var claims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.Role, userRoles[0]),
-                            new Claim("ActiveRole", userRoles[0])
-                        };
-                        await _signInManager.SignInWithClaimsAsync(user, isPersistent: false, claims);
-                    }
-                }
                 
                 return LocalRedirect(returnUrl);
             }
@@ -146,67 +119,49 @@ namespace Stride.Areas.Identity.Pages.Account
                 return Page();
             }
         }
+       public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
+{
+    returnUrl = Url.Content("~/Role/ChooseRole");
+    
+    var info = await _signInManager.GetExternalLoginInfoAsync();
+    if (info == null)
+    {
+        ErrorMessage = "Error loading external login information during confirmation.";
+        return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+    }
 
-        private async Task EnsureRoleExists(string roleName)
+    if (ModelState.IsValid)
+    {
+        var user = new ApplicationUser 
+        { 
+            UserName = Input.Email, 
+            Email = Input.Email,
+            FirstName = Input.FirstName,
+            LastName = Input.LastName,
+        };
+
+        var result = await _userManager.CreateAsync(user);
+        if (result.Succeeded)
         {
-            var roleManager = HttpContext.RequestServices.GetRequiredService<RoleManager<IdentityRole>>();
-            if (!await roleManager.RoleExistsAsync(roleName))
+            result = await _userManager.AddLoginAsync(user, info);
+            if (result.Succeeded)
             {
-                await roleManager.CreateAsync(new IdentityRole(roleName));
+                _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+                
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                
+                return LocalRedirect(returnUrl);
             }
         }
-
-        public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
+        foreach (var error in result.Errors)
         {
-            returnUrl = Url.Content("~/Dashboard/Index");  // Go straight to Dashboard for new Google accounts
-            
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
-            {
-                ErrorMessage = "Error loading external login information during confirmation.";
-                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
-            }
-
-            if (ModelState.IsValid)
-            {
-                var user = new ApplicationUser 
-                { 
-                    UserName = Input.Email, 
-                    Email = Input.Email,
-                    FirstName = Input.FirstName,
-                    LastName = Input.LastName,
-                };
-
-                var result = await _userManager.CreateAsync(user);
-                if (result.Succeeded)
-                {
-                    result = await _userManager.AddLoginAsync(user, info);
-                    if (result.Succeeded)
-                    {
-                        _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
-                        
-                        await EnsureRoleExists("User");
-                        await _userManager.AddToRoleAsync(user, "User");
-                        
-                        var claims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.Role, "User"),
-                            new Claim("ActiveRole", "User")
-                        };
-                        await _signInManager.SignInWithClaimsAsync(user, isPersistent: false, claims);
-                        
-                        return LocalRedirect(returnUrl);
-                    }
-                }
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-            }
-
-            ProviderDisplayName = info.ProviderDisplayName;
-            ReturnUrl = returnUrl;
-            return Page();
+            ModelState.AddModelError(string.Empty, error.Description);
         }
+    }
+
+    ProviderDisplayName = info.ProviderDisplayName;
+    ReturnUrl = returnUrl;
+    return Page();
+} 
     }
 }

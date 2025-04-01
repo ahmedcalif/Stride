@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<body>
+<body class="bg-dark">
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -81,6 +81,11 @@
                                 <input asp-for="Input.PostalCode" class="form-control py-2" placeholder="Postal code" />
                                 <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
                             </div>
+                        </div>
+                        
+                        <div class="form-check mb-3 text-white">
+                            <input class="form-check-input" type="checkbox" id="rememberMe" name="rememberMe" />
+                            <label class="form-check-label" for="rememberMe">Remember me</label>
                         </div>
                         
                         <div class="d-grid mt-4">

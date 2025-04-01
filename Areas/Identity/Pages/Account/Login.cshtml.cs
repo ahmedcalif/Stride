@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Stride.Areas.Identity.Pages.Account
 {
+    [AllowAnonymous]
     public class LoginModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -64,7 +65,6 @@ namespace Stride.Areas.Identity.Pages.Account
 
             returnUrl ??= Url.Content("~/");
 
-            // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
@@ -84,14 +84,11 @@ namespace Stride.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation($"Login attempt for: {Input.Username}");
                     
-                    // Check if input is email
                     bool isEmail = Input.Username.Contains("@");
                     ApplicationUser user = null;
                     
-                    // Try to find user by username first
                     user = await _userManager.FindByNameAsync(Input.Username);
                     
-                    // If not found and input looks like an email, try by email
                     if (user == null && isEmail)
                     {
                         user = await _userManager.FindByEmailAsync(Input.Username);
@@ -100,7 +97,6 @@ namespace Stride.Areas.Identity.Pages.Account
                     
                     if (user != null)
                     {
-                        // Try direct login with username
                         var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                         
                         _logger.LogInformation($"Login result: {result.Succeeded}");
@@ -121,12 +117,10 @@ namespace Stride.Areas.Identity.Pages.Account
                         }
                     }
                     
-                    // If we get here, the login failed
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return Page();
                 }
                 
-                // If we got this far, something failed, redisplay the form
                 return Page();
             }
             catch (Exception ex)
@@ -149,12 +143,10 @@ namespace Stride.Areas.Identity.Pages.Account
                 
                 if (userRoles.Count > 1)
                 {
-                    // If user has multiple roles, redirect to role selector
                     _logger.LogInformation($"User has multiple roles. Redirecting to role selector.");
                 }
                 else if (userRoles.Count == 1)
                 {
-                    // If user has exactly one role, sign in with that role
                     await _signInManager.SignOutAsync();
                     
                     var claims = new List<Claim>
@@ -168,7 +160,6 @@ namespace Stride.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    // If user has no roles, assign the default "User" role
                     _logger.LogInformation($"User has no roles. Assigning default 'User' role.");
                     
                     var roleManager = HttpContext.RequestServices.GetService<RoleManager<IdentityRole>>();

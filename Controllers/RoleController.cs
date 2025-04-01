@@ -35,116 +35,79 @@ namespace Stride.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> ChooseRole()
+      [HttpGet]
+public async Task<IActionResult> ChooseRole()
+{
+    var user = await _userManager.GetUserAsync(User);
+    if (user == null)
+    {
+        return RedirectToAction("Login", "Account", new { area = "Identity" });
+    }
+    
+    var userRoles = await _userManager.GetRolesAsync(user);
+    
+    var model = new ChooseRoleViewModel
+    {
+        AvailableRoles = new List<RoleOption>
         {
-            var identityUser = await _userManager.GetUserAsync(User);
-            if (identityUser == null)
-            {
-                _logger.LogWarning("User not found in Identity database during role selection");
-                return RedirectToAction("Login", "Account", new { area = "Identity" });
-            }
+            new RoleOption { RoleName = "Admin", DisplayName = "Administrator" },
+            new RoleOption { RoleName = "User", DisplayName = "Regular User" }
+        },
+        SelectedRole = userRoles.FirstOrDefault()
+    };
+    
+    return View(model);
+}
 
-            var userRoles = await _userManager.GetRolesAsync(identityUser);
-            
-            if (userRoles.Count == 0)
+[HttpPost]
+public async Task<IActionResult> ChooseRole(ChooseRoleViewModel model)
+{
+    if (!ModelState.IsValid)
+    {
+        _logger.LogWarning("Invalid model state in ChooseRole post");
+        return View(model);
+    }
+    
+    var user = await _userManager.GetUserAsync(User);
+    if (user == null)
+    {
+        _logger.LogWarning("User not found during role selection (POST)");
+        return RedirectToAction("Login", "Account", new { area = "Identity" });
+    }
+    
+    var userRoles = await _userManager.GetRolesAsync(user);
+    
+    if (userRoles.Contains(model.SelectedRole))
+    {
+        await SetActiveRole(model.SelectedRole);
+    }
+    else
+    {
+        if (userRoles.Any())
+        {
+            await _userManager.RemoveFromRolesAsync(user, userRoles);
+        }
+        
+        var addRoleResult = await _userManager.AddToRoleAsync(user, model.SelectedRole);
+        
+        if (!addRoleResult.Succeeded)
+        {
+            foreach (var error in addRoleResult.Errors)
             {
-                _logger.LogInformation($"User {identityUser.UserName} has no roles. Checking if 'User' role exists.");
-                
-                bool roleExists = await _roleManager.RoleExistsAsync("User");
-                if (!roleExists)
-                {
-                    _logger.LogInformation("Creating 'User' role as it doesn't exist");
-                    await _roleManager.CreateAsync(new IdentityRole("User"));
-                }
-                
-                await _userManager.AddToRoleAsync(identityUser, "User");
-                userRoles = new List<string> { "User" };
-                
-                _logger.LogInformation($"Assigned 'User' role to {identityUser.UserName}");
+                ModelState.AddModelError("", error.Description);
             }
-            
-            // Remove this condition to always show the role selection page
-            // if (userRoles.Count == 1)
-            // {
-            //     await SetActiveRole(userRoles.First());
-            //     return RedirectToAction("Index", "Dashboard");
-            // }
-            
-            await EnsureUserInCustomDbAsync(identityUser);
-            
-            // Ensure basic roles exist
-            await EnsureBasicRolesExist();
-            
-            // Get all roles instead of just the user's roles
-            var allRoles = await _roleManager.Roles.ToListAsync();
-            
-            var model = new ChooseRoleViewModel
-            {
-                AvailableRoles = allRoles
-                    .Where(r => userRoles.Contains(r.Name)) // Only show roles the user has
-                    .Select(r => new RoleOption
-                    {
-                        RoleName = r.Name,
-                        DisplayName = GetDisplayName(r.Name)
-                    }).ToList()
-            };
-
             return View(model);
         }
+        
+        await SetActiveRole(model.SelectedRole);
+    }
+    
+    _logger.LogInformation($"User {user.UserName} selected role: {model.SelectedRole}");
 
-        private async Task EnsureBasicRolesExist()
-        {
-            string[] basicRoles = { "User", "Admin" };
-            
-            foreach (var role in basicRoles)
-            {
-                if (!await _roleManager.RoleExistsAsync(role))
-                {
-                    await _roleManager.CreateAsync(new IdentityRole(role));
-                    _logger.LogInformation($"Created role: {role}");
-                }
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> ChooseRole(ChooseRoleViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogWarning("Invalid model state in ChooseRole post");
-                return View(model);
-            }
-            
-            var identityUser = await _userManager.GetUserAsync(User);
-            if (identityUser == null)
-            {
-                _logger.LogWarning("User not found during role selection (POST)");
-                return RedirectToAction("Login", "Account", new { area = "Identity" });
-            }
-            
-            var userRoles = await _userManager.GetRolesAsync(identityUser);
-            
-            if (userRoles.Contains(model.SelectedRole))
-            {
-                await SetActiveRole(model.SelectedRole);
-                
-                _logger.LogInformation($"User {identityUser.UserName} selected role: {model.SelectedRole}");
-                return RedirectToAction("Index", "Dashboard");
-            }
-            
-            _logger.LogWarning($"Invalid role selection: {model.SelectedRole}");
-            ModelState.AddModelError("", "Invalid role selection");
-            
-            model.AvailableRoles = userRoles.Select(r => new RoleOption
-            {
-                RoleName = r,
-                DisplayName = GetDisplayName(r)
-            }).ToList();
-            
-            return View(model);
-        }
-
+    await EnsureUserInCustomDbAsync(user);
+    
+    return RedirectToAction("Index", "Dashboard");
+} 
         private async Task SetActiveRole(string roleName)
         {
             var identityUser = await _userManager.GetUserAsync(User);
@@ -166,9 +129,7 @@ namespace Stride.Controllers
         {
             return roleName switch
             {
-                "Admin" => "Administrator",
-                "Manager" => "Department Manager",
-                "Editor" => "Content Editor",
+                "Admin" => "Administrator", 
                 "User" => "Standard User",
                 _ => roleName
             };
