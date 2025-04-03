@@ -1,15 +1,15 @@
-namespace Stride.Data.Models;
+using System.Collections.Generic;
+using Stride.Data.DatabaseModels;
 
-
-public interface IGoalRepository
+namespace Stride.Data.Models
 {
-    IEnumerable<Goals> GetAllGoals();
-    Goals? GetGoalById(int id);
-    Goals Add(Goals goal);
-    Goals Update(Goals goal);
-    Goals Delete(int id);
-    IEnumerable<Goals> GetIncompleteGoals();
-
-
-    IEnumerable<Goals> GetGoalsByUsername(string username);
+    public interface IGoalRepository
+    {
+        IEnumerable<Goal> GetGoalsByUserId(int userId);
+        IEnumerable<Goal> GetGoalsByUsername(string username);
+        Goal? GetGoalById(int id);
+        void Add(Goal goal);
+        void Update(Goal goal);
+        void Delete(int id);
+    }
 }

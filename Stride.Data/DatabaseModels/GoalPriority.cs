@@ -6,6 +6,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Stride.Data.DatabaseModels {
   public class GoalPriority {
+    [Required]
+    public string description;
 
     [Required]
     [Key]

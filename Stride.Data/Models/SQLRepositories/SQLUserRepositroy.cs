@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Stride.Data.Models;
 using Stride.Data.DatabaseModels;
+using Stride.Data.Models;
 using Stride.Data;
 using Stride.Data.Data;
 
@@ -11,104 +11,106 @@ namespace Stride.Data.Models.SQLRepository
 {
     public class SQLUserRepository : IUserRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _dbContext;
 
-        public SQLUserRepository(ApplicationDbContext context)
+        public SQLUserRepository(ApplicationDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
 
-        public User GetUsers()
+        // Convert DatabaseModels.User to Models.User
+        private Models.User ConvertToModelUser(DatabaseModels.User dbUser)
         {
-            var dbUser = _context.Users.FirstOrDefault();
             if (dbUser == null) return null;
             
-            return MapDbUserToModelUser(dbUser);
-        }
-
-        public User GetUserById(int id)
-        {
-            var dbUser = _context.Users.Find(id);
-            if (dbUser == null)
-            {
-                throw new KeyNotFoundException($"User with ID {id} not found");
-            }
-            
-            return MapDbUserToModelUser(dbUser);
-        }
-
-        public async Task<User> GetUserByUsername(string username)
-        {
-            var dbUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.username.ToLower() == username.ToLower());
-            
-            return dbUser != null ? MapDbUserToModelUser(dbUser) : null;
-        }
-
-        public async Task<User> GetUserByEmail(string email)
-        {
-            var dbUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.email.ToLower() == email.ToLower());
-            
-            return dbUser != null ? MapDbUserToModelUser(dbUser) : null;
-        }
-
-        public User CreateUser(User user)
-        {
-            
-            var dbUser = new DatabaseModels.User
-            {
-                email = user.Email,
-                password_hash = user.Password,
-                username = user.Username,
-            };
-             if (string.IsNullOrEmpty(user.Password))
-            {
-        user.Password = "IDENTITY_MANAGED"; 
-             }
-
-            _context.Users.Add(dbUser);
-            _context.SaveChanges();
-            
-            user.Id = dbUser.user_id;
-            return user;
-        }
-
-        public User UpdateUser(User user)
-        {
-            var dbUser = _context.Users.Find(user.Id);
-            if (dbUser == null)
-                throw new KeyNotFoundException($"User with ID {user.Id} not found");
-
-            dbUser.email = user.Email;
-            dbUser.username = user.Username;
-            
-            _context.SaveChanges();
-            return user;
-        }
-
-        public User DeleteUser(int id)
-        {
-            var dbUser = _context.Users.Find(id);
-            if (dbUser == null)
-                throw new KeyNotFoundException($"User with ID {id} not found");
-            
-            var user = MapDbUserToModelUser(dbUser);
-            _context.Users.Remove(dbUser);
-            _context.SaveChanges();
-            
-            return user;
-        }
-        
-        private User MapDbUserToModelUser(DatabaseModels.User dbUser)
-        {
-            return new User
+            return new Models.User
             {
                 Id = dbUser.user_id,
                 Email = dbUser.email,
-                Password = dbUser.password_hash,
-                Username = dbUser.username
+                Username = dbUser.username,
+                Password = dbUser.password_hash
+                // Map other properties as needed
             };
+        }
+
+        public Models.User GetUsers()
+        {
+            // Implementation depends on what this method should return
+            // Maybe return the first user or a default user?
+            var dbUser = _dbContext.Users.FirstOrDefault();
+            return ConvertToModelUser(dbUser);
+        }
+
+        public Models.User GetUserById(int id)
+        {
+            var dbUser = _dbContext.Users.Find(id);
+            return ConvertToModelUser(dbUser);
+        }
+
+        public async Task<Models.User> GetUserByUsername(string username)
+        {
+            var dbUser = await _dbContext.Users
+                .FirstOrDefaultAsync(u => u.username == username);
+            return ConvertToModelUser(dbUser);
+        }
+
+        public async Task<Models.User> GetUserByEmail(string email)
+        {
+            var dbUser = await _dbContext.Users
+                .FirstOrDefaultAsync(u => u.email == email);
+            return ConvertToModelUser(dbUser);
+        }
+
+        public Models.User CreateUser(Models.User user)
+        {
+            // Convert Models.User to DatabaseModels.User
+            var dbUser = new DatabaseModels.User
+            {
+                email = user.Email,
+                username = user.Username,
+                password_hash = user.Password
+                // Set other properties as needed
+            };
+
+            _dbContext.Users.Add(dbUser);
+            _dbContext.SaveChanges();
+            
+            // Return the created user with ID
+            return ConvertToModelUser(dbUser);
+        }
+
+        public Models.User UpdateUser(Models.User user)
+        {
+            var dbUser = _dbContext.Users.Find(user.Id);
+            if (dbUser == null)
+            {
+                return null;
+            }
+
+            // Update properties
+            dbUser.email = user.Email;
+            dbUser.username = user.Username;
+            dbUser.password_hash = user.Password;
+            // Update other properties as needed
+            
+            _dbContext.Users.Update(dbUser);
+            _dbContext.SaveChanges();
+            
+            return ConvertToModelUser(dbUser);
+        }
+
+        public Models.User DeleteUser(int id)
+        {
+            var dbUser = _dbContext.Users.Find(id);
+            if (dbUser == null)
+            {
+                return null;
+            }
+            
+            _dbContext.Users.Remove(dbUser);
+            _dbContext.SaveChanges();
+            
+            return ConvertToModelUser(dbUser);
         }
     }
 }

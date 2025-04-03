@@ -25,14 +25,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 Console.WriteLine($"Current environment: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}");
 
-if (builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testing"))
-{
-    builder.Services.AddSingleton<IUserRepository, MockUserRepository>();
-    builder.Services.AddSingleton<IGoalRepository, MockGoalRepository>();
-    builder.Services.AddSingleton<IHabitRepository, MockHabitRepository>();
-    Console.WriteLine($"Using Mock Repositories in {builder.Environment.EnvironmentName} environment");
-}
-else
+if (builder.Environment.IsProduction() || builder.Environment.IsDevelopment())
 {
     builder.Services.AddScoped<IUserRepository, SQLUserRepository>();
     builder.Services.AddScoped<IHabitRepository, SQLHabitRepository>();

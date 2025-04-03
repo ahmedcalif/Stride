@@ -17,15 +17,15 @@
                     <div class="card h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-between mb-3">
-                                <span class="badge bg-primary">@goal.Priority</span>
+                                <span class="badge bg-primary">@goal.Priority?.name</span>
                                 <div class="dropdown">
                                     <button class="btn btn-link text-dark" type="button" data-bs-toggle="dropdown">
                                         <i class="fas fa-ellipsis-v"></i>
                                     </button>
                                     <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@goal.Id"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                                        <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@goal.goal_id"><i class="fas fa-edit me-2"></i>Edit</a></li>
                                         <li>
-                                            <form asp-action="Delete" asp-route-id="@goal.Id" method="post" onsubmit="return confirm('Are you sure you want to delete this goal?');">
+                                            <form asp-action="Delete" asp-route-id="@goal.goal_id" method="post" onsubmit="return confirm('Are you sure you want to delete this goal?');">
                                                 @Html.AntiForgeryToken()
                                                 <button type="submit" class="dropdown-item text-danger"><i class="fas fa-trash me-2"></i>Delete</button>
                                             </form>
@@ -33,12 +33,12 @@
                                     </ul>
                                 </div>
                             </div>
-                            <h5 class="card-title">@goal.Title</h5>
-                            <p class="card-text text-muted">@goal.Description</p>
+                            <h5 class="card-title">@goal.title</h5>
+                            <p class="card-text text-muted">@goal.description</p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">Due: @goal.TargetDate.ToString("MMM dd, yyyy")</small>
-                                <span class="badge @(goal.IsCompleted ? "bg-success" : "bg-primary")">
-                                    @(goal.IsCompleted ? "Completed" : "In Progress")
+                                <small class="text-muted">Due: @(goal.end_date?.ToString("MMM dd, yyyy") ?? "No date")</small>
+                                <span class="badge @(goal.is_completed ? "bg-success" : "bg-primary")">
+                                    @(goal.is_completed ? "Completed" : "In Progress")
                                 </span>
                             </div>
                         </div>
