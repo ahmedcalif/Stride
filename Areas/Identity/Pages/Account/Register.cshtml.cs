@@ -37,7 +37,8 @@ namespace Stride.Areas.Identity.Pages.Account
         public InputModel Input { get; set; }
 
         public string ReturnUrl { get; set; }
-
+        
+        public string ErrorMessage { get; set; }
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
         public class InputModel
@@ -80,12 +81,28 @@ namespace Stride.Areas.Identity.Pages.Account
             public string PostalCode { get; set; }
         }
 
-        public async Task OnGetAsync(string returnUrl = null)
-        {
-            ReturnUrl = returnUrl;
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-        }
+        public async Task<IActionResult> OnGetAsync(string returnUrl = null)
+{
+    // Check if this is an AJAX request
+    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+    {
+        // Return the partial view
+        return Partial("_LoginPartial", this);
+    }
+    
+    // Existing code for non-AJAX requests
+    if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        ModelState.AddModelError(string.Empty, ErrorMessage);
+    }
 
+    returnUrl ??= Url.Content("~/");
+    await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+    ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+    ReturnUrl = returnUrl;
+    
+    return Page();
+}
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             try

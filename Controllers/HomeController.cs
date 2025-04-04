@@ -15,8 +15,13 @@ public class HomeController : Controller
         _logger = logger;
     }
 
-    public IActionResult Index()
+ public IActionResult Index()
     {
+        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        {
+            return PartialView("_IndexPartial");
+        }
+        
         return View();
     }
 
