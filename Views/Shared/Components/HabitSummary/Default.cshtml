@@ -1,0 +1,33 @@
+@model IEnumerable<Stride.ViewComponents.HabitFrequencySummaryViewModel>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Habit Summary</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="list-group">
+                @foreach (var summary in Model)
+                {
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>@summary.FrequencyName</div>
+                        <span class="badge bg-primary rounded-pill">@summary.Count</span>
+                    </div>
+                }
+            </div>
+            <div class="text-end mt-3">
+                <span class="text-muted">Total: @Model.Sum(s => s.Count) habits</span>
+            </div>
+        }
+        else
+        {
+            <p class="text-center text-muted my-3">No habits created yet</p>
+            <div class="text-center">
+                <a asp-controller="Habits" asp-action="Create" class="btn btn-sm btn-primary">
+                    <i class="fas fa-plus me-1"></i> Add Your First Habit
+                </a>
+            </div>
+        }
+    </div>
+</div>

@@ -20,11 +20,11 @@ namespace Stride.Data.Models.SQLRepository
 
         public IEnumerable<Goal> GetGoalsByUserId(int userId)
         {
-            return _dbContext.Goals
-                .Include(g => g.Category)
-                .Include(g => g.Priority)
-                .Where(g => g.user_id == userId)
-                .ToList();
+             return _dbContext.Goals
+        .Include(g => g.Category)   
+        .Include(g => g.Priority)      
+        .Where(g => g.user_id == userId)
+        .ToList();
         }
 
         public IEnumerable<Goal> GetGoalsByUsername(string username)
