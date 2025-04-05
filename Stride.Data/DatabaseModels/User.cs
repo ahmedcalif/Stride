@@ -27,5 +27,10 @@ namespace Stride.Data.DatabaseModels
         {
             throw new NotImplementedException();
         }
+
+    public static implicit operator User(Models.User v)
+    {
+      throw new NotImplementedException();
     }
+  }
 }

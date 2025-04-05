@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "apprun": "^3.33.9"
+  },
+  "scripts": {
+    "build": "mkdir -p wwwroot/js && cp node_modules/apprun/dist/apprun.js wwwroot/js/"
+  }
+}

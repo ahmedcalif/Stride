@@ -11,30 +11,29 @@
 </head>
 <body>
 <div class="py-4 d-flex justify-content-center">
-    <nav class="bg-white px-4 py-3 rounded-4 shadow-sm">
-      <ul class="nav gap-5">
+  <nav class="bg-white px-4 py-3 rounded-4 shadow-sm">
+    <ul class="nav gap-5">
+      <li class="nav-item">
+        <a href="/Dashboard" class="nav-link text-primary fs-5 spa-link">Dashboard</a>
+      </li>
+      <li class="nav-item">
+        <a href="/Goals" class="nav-link text-secondary fs-5 spa-link">Goals</a>
+      </li>
+      <li class="nav-item">
+        <a href="/Habits" class="nav-link text-secondary fs-5 spa-link">Habits</a>
+      </li>
+      @if (User.IsInRole("Admin") || User.HasClaim(c => c.Type == "ActiveRole" && c.Value == "Admin"))
+      {
         <li class="nav-item">
-          <a href="/Dashboard" class="nav-link text-primary fs-5">Dashboard</a>
+          <a href="/Admin/Users" class="nav-link text-secondary fs-5 spa-link">Users</a>
         </li>
-        <li class="nav-item">
-          <a href="/Goals" class="nav-link text-secondary fs-5">Goals</a>
-        </li>
-        <li class="nav-item">
-          <a href="/Habits" class="nav-link text-secondary fs-5">Habits</a>
-        </li>
-        @if (User.IsInRole("Admin") || User.HasClaim(c => c.Type == "ActiveRole" && c.Value == "Admin"))
-        {
-          <li class="nav-item">
-            <a href="/Admin/Users" class="nav-link text-secondary fs-5">Users</a>
-          </li>
-        }
-        <li class="nav-item">
-          <a href="/Settings" class="nav-link text-secondary fs-5 d-flex align-items-center justify-content-center">Settings</a>
-        </li>
-      </ul>
-    </nav>
-  </div> 
-            <main class="flex-grow-1 p-3">
+      }
+      <li class="nav-item">
+        <a href="/Settings" class="nav-link text-secondary fs-5 d-flex align-items-center justify-content-center spa-link">Settings</a>
+      </li>
+    </ul>
+  </nav>
+</div> <main class="flex-grow-1 p-3">
                 @RenderBody()
             </main>
         </div>

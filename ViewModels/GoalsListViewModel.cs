@@ -7,7 +7,7 @@ namespace Stride.ViewModels;
 // for listing goals (strictly typed)
  public class GoalListViewModel
     {
-        public IEnumerable<Goal> Goals { get; set; } = new List<Goal>();
+      public IEnumerable<Goal> Goals { get; set; } = new List<Goal>(); 
     }
 
     // Priority enum that matches your database GoalPriority values
