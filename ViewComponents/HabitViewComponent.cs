@@ -20,7 +20,6 @@ namespace Stride.ViewComponents
         {
             try
             {
-                // Get habits grouped by frequency name directly from the database
                 var habitsByFrequency = await _dbContext.Habits
                     .Where(h => h.user.user_id == userId)
                     .Join(_dbContext.HabitFrequency,
@@ -39,7 +38,6 @@ namespace Stride.ViewComponents
             }
             catch (Exception ex)
             {
-                // If there's an error, return a simple error view
                 var errorModel = new List<HabitFrequencySummaryViewModel>
                 {
                     new HabitFrequencySummaryViewModel
@@ -49,7 +47,6 @@ namespace Stride.ViewComponents
                     }
                 };
                 
-                // Log the error
                 System.Diagnostics.Debug.WriteLine($"Error in HabitSummaryViewComponent: {ex.Message}");
                 
                 return View(errorModel);
@@ -57,7 +54,6 @@ namespace Stride.ViewComponents
         }
     }
 
-    // View model class defined within the same file
     public class HabitFrequencySummaryViewModel
     {
         public string FrequencyName { get; set; }

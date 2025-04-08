@@ -14,7 +14,6 @@ namespace Stride.Data.DatabaseModels
         [StringLength(50)]
         public string name { get; set; }
         
-        // Navigation property
         public ICollection<Habit> Habits { get; set; }
     }
 }

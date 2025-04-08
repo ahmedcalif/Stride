@@ -24,15 +24,12 @@ namespace Stride.Data
                     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                     
                     Console.WriteLine("Ensuring database is created...");
-                    // This will create the database if it doesn't exist
                     bool wasCreated = dbContext.Database.EnsureCreated();
                     Console.WriteLine($"Database created: {wasCreated}");
                     
-                    // Print database connection string (without sensitive info)
                     var connectionString = dbContext.Database.GetConnectionString();
                     if (!string.IsNullOrEmpty(connectionString))
                     {
-                        // Mask password if present
                         var maskedConnectionString = connectionString;
                         if (maskedConnectionString.Contains("password=") || maskedConnectionString.Contains("Password="))
                         {
@@ -41,7 +38,6 @@ namespace Stride.Data
                         Console.WriteLine($"Using connection: {maskedConnectionString}");
                     }
                     
-                    // Check if tables exist
                     Console.WriteLine("Checking if tables exist...");
                     bool hasCategories = TableExists<Category>(dbContext);
                     bool hasGoalPriorities = TableExists<GoalPriority>(dbContext);
@@ -53,12 +49,10 @@ namespace Stride.Data
                     Console.WriteLine($"Tables exist? Categories: {hasCategories}, GoalPriorities: {hasGoalPriorities}, " +
                                       $"Goals: {hasGoals}, Habits: {hasHabits}, Users: {hasUsers}, HabitFrequencies: {hasHabitFrequencies}");
                     
-                    // Proceed with seeding
                     SeedHabitFrequencies(dbContext);
                     SeedCategories(dbContext);
                     SeedGoalPriorities(dbContext);
                     
-                    // Check if users exist before attempting to seed goals and habits
                     var userCount = dbContext.Set<User>().Count();
                     Console.WriteLine($"User count: {userCount}");
                     
@@ -85,7 +79,7 @@ namespace Stride.Data
                     Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
                 }
                 
-                throw; // Re-throw to propagate the error
+                throw;
             }
         }
         
@@ -93,7 +87,6 @@ namespace Stride.Data
         {
             try
             {
-                // Try to get count to see if the table exists and is accessible
                 var count = dbContext.Set<T>().Count();
                 return true;
             }

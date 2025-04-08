@@ -1,4 +1,12 @@
 @model Stride.ViewModels.GoalViewModel
+@{
+    if (ViewData["IsVirtualDomRequest"] as bool? == true)
+    {
+      Layout = null;
+    } else {
+      Layout = "_Layout";
+    }
+}
 
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -89,15 +97,11 @@ $(document).ready(function() {
             type: 'POST',
             data: $(this).serialize(),
             success: function(response) {
-                // Check if response contains validation errors
                 if ($(response).find('.validation-summary-errors').length > 0 || 
                     $(response).find('.text-danger').length > 0) {
-                    // If there are validation errors, replace the form with the response
                     $('#content-container').html(response);
                 } else {
-                    // If successful, navigate to the goals index page
                     loadContent('/Goals');
-                    // Show success message
                     showAlert('success', 'Goal created successfully!');
                 }
             },

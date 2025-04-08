@@ -10,37 +10,12 @@
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    <div class="py-4 d-flex justify-content-center">
-        <nav class="bg-white px-4 py-3 rounded-4 shadow-sm">
-            <ul class="nav gap-5">
-                <li class="nav-item">
-                    <a href="/Dashboard" class="nav-link @(Context.Request.Path.Value?.StartsWith("/Dashboard") == true ? "text-primary" : "text-secondary") fs-5 spa-link">Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a href="/Goals" class="nav-link @(Context.Request.Path.Value?.StartsWith("/Goals") == true ? "text-primary" : "text-secondary") fs-5 spa-link">Goals</a>
-                </li>
-                <li class="nav-item">
-                    <a href="/Habits" class="nav-link @(Context.Request.Path.Value?.StartsWith("/Habits") == true ? "text-primary" : "text-secondary") fs-5 spa-link">Habits</a>
-                </li>
-                @if (User.IsInRole("Admin") || User.HasClaim(c => c.Type == "ActiveRole" && c.Value == "Admin"))
-                {
-                    <li class="nav-item">
-                        <a href="/Admin/Users" class="nav-link @(Context.Request.Path.Value?.StartsWith("/Admin") == true ? "text-primary" : "text-secondary") fs-5 spa-link">Users</a>
-                    </li>
-                }
-                <li class="nav-item">
-                    <a href="/Settings" class="nav-link @(Context.Request.Path.Value?.StartsWith("/Settings") == true ? "text-primary" : "text-secondary") fs-5 d-flex align-items-center justify-content-center spa-link">Settings</a>
-                </li>
-            </ul>
-        </nav>
-    </div> 
     <main class="flex-grow-1 p-3">
         <div id="content-container">
             @RenderBody()
         </div>
     </main>
 
-    <!-- Script References -->
     <script src="~/lib/jquery/jquery.min.js"></script>
     <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>

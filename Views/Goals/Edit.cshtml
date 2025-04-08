@@ -1,6 +1,12 @@
 @model Stride.ViewModels.GoalViewModel
 @{
     ViewData["Title"] = "Edit Goal";
+    if (ViewData["IsVirtualDomRequest"] as bool? == true)
+    {
+      Layout = null;
+    } else {
+      Layout = "_Layout";
+    }
 }
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -8,13 +14,13 @@
             <div class="card">
                 <div class="card-body">
                     <h1 class="h3 mb-4">Edit Goal</h1>
-                    <form asp-action="Edit" method="post">
+                    <form asp-action="Edit" method="post" id="editGoalForm">
                         <input type="hidden" asp-for="Id" />
                         
                         <partial name="_GoalForm" model="Model" />
                         
                         <div class="d-flex justify-content-between">
-                            <a asp-action="Index" class="btn btn-outline-secondary">
+                            <a href="/Goals" class="btn btn-outline-secondary spa-link">
                                 <i class="fas fa-arrow-left me-2"></i>Back to List
                             </a>
                             <button type="submit" class="btn btn-primary">
@@ -29,4 +35,46 @@
 </div>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+    $(document).ready(function() {
+        $("#editGoalForm").submit(function(e) {
+            e.preventDefault();
+            
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+                success: function(response) {
+                    if ($(response).find('.validation-summary-errors').length > 0 || 
+                        $(response).find('.text-danger').length > 0) {
+                        $('#apprun-app').html(response);
+                    } else {
+                        history.pushState(null, "", "/Goals");
+                        fetch("/Goals", {
+                            headers: { "X-Requested-With": "XMLHttpRequest" }
+                        })
+                        .then(response => response.text())
+                        .then(html => {
+                            $('#apprun-app').html(html);
+                            
+                            const alertDiv = $('<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                                'Goal updated successfully!' +
+                                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                                '</div>');
+                            $('#apprun-app').prepend(alertDiv);
+                        });
+                    }
+                },
+                error: function() {
+                    const alertDiv = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
+                        'An error occurred while updating the goal.' +
+                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                        '</div>');
+                    $('#apprun-app').prepend(alertDiv);
+                }
+            });
+        });
+    });
+    </script>
 }

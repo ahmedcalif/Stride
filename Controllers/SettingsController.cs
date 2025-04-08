@@ -101,16 +101,13 @@ public class SettingsController : Controller
                 return RedirectToAction("Login", "Account");
             }
             
-            // Try to get the user from Identity first
             var appUser = await _userManager.FindByNameAsync(userName);
             
             if (appUser != null)
             {
-                // Check if username is being changed
                 bool usernameChanged = appUser.UserName != model.Username;
                 bool emailChanged = appUser.Email != model.Email;
                 
-                // Update the user with values from the model
                 appUser.UserName = model.Username;
                 appUser.Email = model.Email;
                 appUser.UserGender = model.UserGender;
@@ -118,7 +115,6 @@ public class SettingsController : Controller
                 appUser.PostalCode = model.PostalCode;
                 appUser.TwoFactorEnabled = model.TwoFactorEnabled;
                 
-                // Handle password change if requested
                 if (!string.IsNullOrEmpty(model.CurrentPassword) && !string.IsNullOrEmpty(model.NewPassword))
                 {
                     var passwordCheckResult = await _userManager.CheckPasswordAsync(appUser, model.CurrentPassword);
@@ -144,7 +140,6 @@ public class SettingsController : Controller
                     }
                 }
                 
-                // Save the changes to the identity user
                 var result = await _userManager.UpdateAsync(appUser);
                 
                 if (!result.Succeeded)
@@ -156,7 +151,6 @@ public class SettingsController : Controller
                     return View(model);
                 }
                 
-                // If username changed, sign the user in again with new username
                 if (usernameChanged || emailChanged)
                 {
                     await _signInManager.SignInAsync(appUser, isPersistent: false);
@@ -167,7 +161,6 @@ public class SettingsController : Controller
             }
             else
             {
-                // Fall back to updating with the repository
                 var user = await _userRepository.GetUserByUsername(userName);
                 
                 if (user == null || user.Id != model.Id)

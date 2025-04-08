@@ -17,7 +17,6 @@
     </div>
     
     <div class="row">
-        <!-- Main content -->
         <div class="col-lg-9">
             <div class="row g-4">
                 @if (Model.Habits != null && Model.Habits.Any())
@@ -67,14 +66,12 @@
             </div>
         </div>
         
-        <!-- Sidebar -->
         <div class="col-lg-3">
             @await Component.InvokeAsync("HabitSummary", new { userId = 1 })
         </div>
     </div>
 </div>
 
-<!-- Alert messages -->
 @if (TempData["Success"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">

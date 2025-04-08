@@ -32,10 +32,8 @@ public async Task<IActionResult> Index()
     {
         var username = User.Identity.Name;
         
-        // Get goals for this user
         var goalsFromRepo = _goalRepository.GetGoalsByUsername(username).ToList();
         
-        // Map goals to view model objects
         List<Stride.Data.Models.Goals> goalsList = goalsFromRepo.Select(g => new Stride.Data.Models.Goals
         {
             Id = g.goal_id,
@@ -49,7 +47,6 @@ public async Task<IActionResult> Index()
             Username = username
         }).ToList();
         
-        // Create view model with user details from Identity claims
         var viewModel = new DashboardViewModel
         {
             Username = username,

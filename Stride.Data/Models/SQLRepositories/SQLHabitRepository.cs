@@ -24,15 +24,17 @@ namespace Stride.Data.Models.SQLRepository
                 
             try
             {
+               var frequency = dbHabit.HabitFrequency != null 
+            ? (Frequency)dbHabit.habit_frequency_id 
+            : Frequency.Daily;
+
                 return new Habits 
                 {
                     Id = dbHabit.habit_id,
                     Title = dbHabit.title ?? string.Empty,
                     Description = dbHabit.description ?? string.Empty,
                     ReminderTime = dbHabit.reminder_time,
-                    Frequency = dbHabit.HabitFrequency != null 
-                        ? (Frequency)Enum.Parse(typeof(Frequency), dbHabit.HabitFrequency.ToString()) 
-                        : Frequency.Daily, // Default value if null
+                    Frequency = frequency,// Default value if null
                     Username = dbHabit.user?.username ?? string.Empty
                 };
             }
@@ -69,7 +71,6 @@ namespace Stride.Data.Models.SQLRepository
             Console.WriteLine($"Warning: User with username {username} not found. Using default user.");
         }
 
-        // Check if any HabitFrequency records exist, if not create them
         if (!_dbContext.HabitFrequency.Any())
         {
             Console.WriteLine("No HabitFrequency records found. Creating default frequencies.");
@@ -84,7 +85,6 @@ namespace Stride.Data.Models.SQLRepository
 
         if (habitFrequency == null)
         {
-            // Create the specific frequency if it doesn't exist
             habitFrequency = new HabitFrequency
             {
                 habit_frequency_id = (int)habits.Frequency,
@@ -117,7 +117,6 @@ namespace Stride.Data.Models.SQLRepository
     }
 }
 
-// helper new method to create default frequencies
 private void CreateDefaultFrequencies()
 {
     try
@@ -148,9 +147,9 @@ private void CreateDefaultFrequencies()
         var dbHabits = _dbContext.Habits
             .Include(h => h.user)
             .Include(h => h.HabitFrequency)
-            .ToList(); // Execute the query and bring data into memory
+            .ToList(); 
             
-        // Then convert each habit (now in memory)
+    
         return dbHabits
             .Select(h => ConvertToHabits(h))
             .Where(h => h != null)

@@ -42,48 +42,53 @@
 
   <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="~/lib/jquery/jquery.min.js"></script>
-  <!-- Add AppRun library -->
-  <script src="https://unpkg.com/apprun@latest/dist/apprun-html.js"></script>
-  
-  <script>
-    $.ajaxSetup({ cache: false });
-    
-    const get = url => new Promise((resolve, reject) => {
-      $.getJSON(url)
-        .then(d => resolve(d))
-        .fail(e => reject(e))
-    });
+ <script src="https://unpkg.com/apprun@latest/dist/apprun.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const appContainer = document.getElementById("apprun-app");
 
-    window.addEventListener('popstate', (e) => {
-      const path = document.location.pathname;
-      app.run('/', path);
-    });
-    document.querySelectorAll('.nav-item a').forEach(link => {
-      link.addEventListener('click', function(event) {
-        event.preventDefault();
-        document.querySelectorAll('.nav-item a').forEach(a => a.classList.remove('text-primary'));
-        document.querySelectorAll('.nav-item a').forEach(a => a.classList.add('text-secondary'));
-        this.classList.remove('text-secondary');
-        this.classList.add('text-primary');
-        history.pushState(null, '', this.href);
-        app.run('/', this.pathname);
+        document.body.addEventListener("click", event => {
+          const link = event.target.closest("a.spa-link");
+          if (!link) return;
+          event.preventDefault();
+
+          const url = link.getAttribute("href");
+          if (!url) return;
+
+          history.pushState(null, "", url);
+          fetchContent(url);
+        });
+
+        window.addEventListener("popstate", () => {
+          fetchContent(window.location.pathname);
+        });
+
+        async function fetchContent(url) {
+          try {
+            const response = await fetch(url, {
+              headers: { "X-Requested-With": "XMLHttpRequest" }
+            });
+            const html = await response.text();
+            appContainer.innerHTML = html;
+            
+            const scripts = appContainer.querySelectorAll("script");
+            scripts.forEach(oldScript => {
+              const newScript = document.createElement("script");
+              if (oldScript.src) {
+                newScript.src = oldScript.src;
+              } else {
+                newScript.textContent = oldScript.textContent;
+              }
+              document.head.appendChild(newScript);
+              document.head.removeChild(newScript);
+            });
+          } catch (error) {
+            console.error("Error loading content:", error);
+            window.location.href = url;
+          }
+        }
       });
-    });
-
-    const view = (state) => state;
-
-    const update = {
-      '/': async (_, path) => {
-        const json = await get(path);
-        return json;
-      }
-    };
-
-    app.start('apprun-app', null, view, update);
-
-    app.run('/', document.location.pathname);
-  </script>
-
-  @await RenderSectionAsync("Scripts", required: false)
+    </script>
+    @await RenderSectionAsync("Scripts", required: false) 
 </body>
 </html>

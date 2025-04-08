@@ -1,6 +1,12 @@
 @model Stride.ViewModels.GoalViewModel
 @{
     ViewData["Title"] = "Add Goals";
+    if (ViewData["IsVirtualDomRequest"] as bool? == true)
+    {
+      Layout = null;
+    } else {
+      Layout = "_Layout";
+    }
 }
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -11,67 +17,13 @@
                 </div>
                 
                 <div class="card-body">
-                    <form asp-action="Create" asp-controller="Goals" method="post">
+                    <form asp-action="Create" asp-controller="Goals" method="post" id="createGoalForm">
                         @Html.AntiForgeryToken()
-                        <div class="mb-3">
-                            <label asp-for="Title" class="form-label">Goal Title</label>
-                            <input asp-for="Title" class="form-control">
-                            <span asp-validation-for="Title" class="text-danger"></span>
-                        </div>
                         
-                        <div class="mb-3">
-                            <label asp-for="Description" class="form-label">Description</label>
-                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
-                        </div>
+                        <partial name="_GoalForm" model="Model" />
                         
-                        <div class="mb-3">
-                            <label asp-for="Category" class="form-label">Category</label>
-                            <select asp-for="Category" class="form-select">
-                                <option value="General">General</option>
-                                <option value="Work">Work</option>
-                                <option value="Personal">Personal</option>
-                                <option value="Health">Health</option>
-                                <option value="Finance">Finance</option>
-                                <option value="Education">Education</option>
-                                <option value="Family">Family</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <span asp-validation-for="Category" class="text-danger"></span>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label asp-for="TargetDate" class="form-label">Target Date</label>
-                            <input asp-for="TargetDate" class="form-control" type="date">
-                            <span asp-validation-for="TargetDate" class="text-danger"></span>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label asp-for="Priority" class="form-label">Priority Level</label>
-                            <div class="d-flex gap-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" asp-for="Priority" value="@Priority.Low" id="lowPriority">
-                                    <label class="form-check-label" for="lowPriority">
-                                        Low
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" asp-for="Priority" value="@Priority.Medium" id="mediumPriority" checked>
-                                    <label class="form-check-label" for="mediumPriority">
-                                        Medium
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" asp-for="Priority" value="@Priority.High" id="highPriority">
-                                    <label class="form-check-label" for="highPriority">
-                                        High
-                                    </label>
-                                </div>
-                            </div>
-                            <span asp-validation-for="Priority" class="text-danger"></span>
-                        </div>
                         <div class="d-flex justify-content-end gap-2">
-                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                            <a href="/Goals" class="btn btn-secondary spa-link">Cancel</a>
                             <button type="submit" class="btn btn-primary">Add Goal</button>
                         </div>
                     </form>
@@ -80,6 +32,51 @@
         </div>
     </div>
 </div>
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+    $(document).ready(function() {
+        $("#createGoalForm").submit(function(e) {
+            e.preventDefault();
+            
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+                success: function(response) {
+                    if ($(response).find('.validation-summary-errors').length > 0 || 
+                        $(response).find('.text-danger').length > 0) {
+                        $('#apprun-app').html(response);
+                    } else {
+                        // Navigate to goals list
+                        history.pushState(null, "", "/Goals");
+                        fetch("/Goals", {
+                            headers: { "X-Requested-With": "XMLHttpRequest" }
+                        })
+                        .then(response => response.text())
+                        .then(html => {
+                            $('#apprun-app').html(html);
+                            
+                            // Show success message
+                            const alertDiv = $('<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                                'Goal created successfully!' +
+                                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                                '</div>');
+                            $('#apprun-app').prepend(alertDiv);
+                        });
+                    }
+                },
+                error: function() {
+                    const alertDiv = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
+                        'An error occurred while creating the goal.' +
+                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                        '</div>');
+                    $('#apprun-app').prepend(alertDiv);
+                }
+            });
+        });
+    });
+    </script>
 }

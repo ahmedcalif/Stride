@@ -8,7 +8,6 @@ public enum Frequency
     Daily,
     Weekly,
     Monthly,
-    Quarterly,
     Yearly
 }
 
