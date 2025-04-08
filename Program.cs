@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 // Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
 // Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
 // Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Staging");
-Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Production");
+// Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Production");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -110,6 +110,8 @@ builder.Services.AddMvc(config => {
     .Build();
     config.Filters.Add(new AuthorizeFilter(policy));
 });
+
+builder.WebHost.UseUrls("http://*:8080");
 
 var app = builder.Build();
 
