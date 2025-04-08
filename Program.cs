@@ -114,6 +114,7 @@ builder.Services.AddMvc(config => {
 builder.WebHost.UseUrls("http://*:8080");
 
 var app = builder.Build();
+app.MapGet("/health", () => "Healthy");
 
 if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
 {
